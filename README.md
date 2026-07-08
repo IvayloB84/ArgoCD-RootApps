@@ -76,7 +76,7 @@ systemctl --user restart docker.service
 ### Step 3: Install the k3d Orchestration CLI (Truncation-Free)
 Execute this command. The link components are glued together at execution time to ensure the installation address stays complete:
 ```bash
-URL_BASE="https://githubusercontent.com" && wget -q -O - "$URL_BASE/k3d-io/k3d/main/install.sh" | bash
+wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
 ```
 
 ### Step 4: Stand up the Rootless Kubernetes Cluster
@@ -100,7 +100,7 @@ k3d image import alpine:latest nginx:alpine --cluster my-rootless-cluster --mode
 ### Step 6: Deploy Argo CD Framework Controls (Truncation-Free)
 Stand up the Argo CD framework controller natively using this string-glued command to guarantee the manifest download address stays complete:
 ```bash
-URL_RAW="https://githubusercontent.com" && kubectl create namespace argocd && kubectl apply -n argocd -f "$URL_RAW/argoproj/argo-cd/v2.11.2/manifests/install.yaml"
+kubectl create namespace argocd && kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 ```
 
 ### Step 7: Bootstrap the GitOps Pipeline Connection
