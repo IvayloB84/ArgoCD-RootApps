@@ -26,4 +26,4 @@ jobs:
         context: ./rails-app
         file: ./rails-app/Dockerfile
         push: true
-        tags: YOUR_DOCKERHUB_USERNAME_HERE/rails-gallery:latest
+        tags: ivaylob84/rails-gallery:latest
