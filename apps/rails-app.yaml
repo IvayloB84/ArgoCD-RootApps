@@ -16,8 +16,7 @@ spec:
       volumes:
         - name: rails-storage
           persistentVolumeClaim:
-            claimName: unified-storage-pvc
-      # The Init Container runs first to generate a simple working Ruby server file
+            claimName: project-storage-pvc
       initContainers:
       - name: write-test-ruby-app
         image: ruby:3.2-alpine
@@ -38,7 +37,6 @@ spec:
       containers:
       - name: rails-container
         image: ruby:3.2-alpine
-        # We tell the container to install the puma gem instantly and start our test app
         command: ["sh", "-c"]
         args: ["gem install puma --no-document && bundle exec puma -C config/puma.rb"]
         ports:
@@ -49,42 +47,3 @@ spec:
         env:
         - name: RAILS_ENV
           value: "production"
-        resources:
-          requests:
-            memory: "128Mi"
-            cpu: "100m"
-          limits:
-            memory: "256Mi"
-            cpu: "300m"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: rails-app-service
-  namespace: default
-spec:
-  selector:
-    app: rails-web
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 3000
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: rails-app-ingress
-  namespace: default
-  annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: web
-spec:
-  rules:
-  - http:
-      paths:
-      - path: /rails
-        pathType: Prefix
-        backend:
-          service:
-            name: rails-app-service
-            port:
-              number: 80
