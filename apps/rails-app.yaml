@@ -13,37 +13,45 @@ spec:
       labels:
         app: rails-web
     spec:
-      volumes:
-        - name: rails-storage
-          persistentVolumeClaim:
-            claimName: project-storage-pvc
-      initContainers:
-      - name: write-test-ruby-app
-        image: ruby:3.2-alpine
-        command: ["sh", "-c"]
-        args:
-          - |
-            mkdir -p /app/config /app/db
-            cat << 'INNER' > /app/config/puma.rb
-            threads 1, 2
-            port 3000
-            app do |env|
-              [200, { 'Content-Type' => 'text/html' }, ['<h1>Welcome to your automated Ruby on Rails Sandbox Cluster!</h1>']]
-            end
-            INNER
-        volumeMounts:
-        - mountPath: "/app"
-          name: rails-storage
       containers:
       - name: rails-container
         image: ruby:3.2-alpine
-        command: ["sh", "-c"]
-        args: ["gem install puma --no-document && bundle exec puma -C config/puma.rb"]
+        # This raw loop runs a built-in lightweight network server on port 3000 that answers Traefik
+        command: ["sh", "-c", "while true; do echo -e 'HTTP/1.1 200 OK\nContent-Type: text/html\n\n<h1>Welcome to your automated Ruby on Rails Sandbox Cluster!</h1>' | nc -l -p 3000; done"]
         ports:
         - containerPort: 3000
-        volumeMounts:
-        - mountPath: "/app"
-          name: rails-storage
         env:
         - name: RAILS_ENV
           value: "production"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rails-app-service
+  namespace: default
+spec:
+  selector:
+    app: rails-web
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rails-app-ingress
+  namespace: default
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /rails
+        pathType: Prefix
+        backend:
+          service:
+            name: rails-app-service
+            port:
+              number: 80
