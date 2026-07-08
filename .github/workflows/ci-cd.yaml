@@ -19,5 +19,5 @@ jobs:
       with:
         context: ./rails-app
         file: ./rails-app/Dockerfile
-        push: false # We will switch this to true once you hook up your Docker Hub keys!
+        push: true # We will switch this to true once you hook up your Docker Hub keys!
         tags: rails-gallery:latest
