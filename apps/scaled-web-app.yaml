@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-web-deployment
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: scaled-web
+  template:
+    metadata:
+      labels:
+        app: scaled-web
+    spec:
+      volumes:
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: project-storage-pvc
+        - name: config-volume
+          configMap:
+            name: nginx-custom-config
+      containers:
+      - name: nginx-container
+        image: nginx:alpine
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - mountPath: "/app"
+            name: data-volume
+          - mountPath: "/etc/nginx/conf.d/default.conf"
+            subPath: "default.conf"
+            name: config-volume
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: project-web-service
+  namespace: default
+spec:
+  selector:
+    app: scaled-web
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

@@ -1,0 +1,12 @@
+# Ignore local Markdown and documentation notes
+*.md
+docs/
+cheatsheets/
+
+# Ignore source code versioning files inside apps directory
+.gitignore
+.git/
+
+# Ignore backup manifests
+*.bak
+*.old

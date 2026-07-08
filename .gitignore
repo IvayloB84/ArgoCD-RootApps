@@ -1,0 +1,20 @@
+# Sensitive Information and Passwords
+*password*
+*secret*
+*token*
+*.pem
+*.key
+credentials/
+secrets/
+
+# Local Testing Variables
+.env
+.env.local
+
+# Kubernetes Cluster Cache Leakage
+kubeconfig*
+*.kubeconfig
+
+# System OS Files
+.DS_Store
+Thumbs.db

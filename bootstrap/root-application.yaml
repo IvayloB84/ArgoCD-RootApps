@@ -1,22 +1,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: root-application
+  name: root-gitops-app
   namespace: argocd
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
-    repoURL: 'https://github.com'
+    repoURL: 'https://github.com/IvayloB84/ArgoCD-RootApps'
     targetRevision: HEAD
     path: apps
   destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: argocd
+    server: 'https://default.svc'
+    namespace: default
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
