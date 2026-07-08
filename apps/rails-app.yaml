@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rails-app-deployment
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: rails-web
+  template:
+    metadata:
+      labels:
+        app: rails-web
+    spec:
+      volumes:
+        - name: rails-storage
+          persistentVolumeClaim:
+            claimName: unified-storage-pvc
+      containers:
+      - name: rails-container
+        image: ruby:3.2-alpine
+        command: ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+        ports:
+        - containerPort: 3000
+        volumeMounts:
+        - mountPath: "/app/db"
+          name: rails-storage
+        env:
+        - name: RAILS_ENV
+          value: "production"
+        - name: RAILS_LOG_TO_STDOUT
+          value: "enabled"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rails-app-service
+  namespace: default
+spec:
+  selector:
+    app: rails-web
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rails-app-ingress
+  namespace: default
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /rails
+        pathType: Prefix
+        backend:
+          service:
+            name: rails-app-service
+            port:
+              number: 80
