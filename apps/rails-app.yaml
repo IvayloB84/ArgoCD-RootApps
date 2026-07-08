@@ -17,27 +17,45 @@ spec:
         - name: rails-storage
           persistentVolumeClaim:
             claimName: unified-storage-pvc
+      # The Init Container runs first to generate a simple working Ruby server file
+      initContainers:
+      - name: write-test-ruby-app
+        image: ruby:3.2-alpine
+        command: ["sh", "-c"]
+        args:
+          - |
+            mkdir -p /app/config /app/db
+            cat << 'INNER' > /app/config/puma.rb
+            threads 1, 2
+            port 3000
+            app do |env|
+              [200, { 'Content-Type' => 'text/html' }, ['<h1>Welcome to your automated Ruby on Rails Sandbox Cluster!</h1>']]
+            end
+            INNER
+        volumeMounts:
+        - mountPath: "/app"
+          name: rails-storage
       containers:
       - name: rails-container
         image: ruby:3.2-alpine
-        command: ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+        # We tell the container to install the puma gem instantly and start our test app
+        command: ["sh", "-c"]
+        args: ["gem install puma --no-document && bundle exec puma -C config/puma.rb"]
         ports:
         - containerPort: 3000
         volumeMounts:
-        - mountPath: "/app/db"
+        - mountPath: "/app"
           name: rails-storage
         env:
         - name: RAILS_ENV
           value: "production"
-        - name: RAILS_LOG_TO_STDOUT
-          value: "enabled"
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "200m"
+            memory: "128Mi"
+            cpu: "100m"
           limits:
-            memory: "512Mi"
-            cpu: "500m"
+            memory: "256Mi"
+            cpu: "300m"
 ---
 apiVersion: v1
 kind: Service
