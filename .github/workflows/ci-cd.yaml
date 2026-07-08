@@ -14,10 +14,16 @@ jobs:
     - name: Set up Docker Buildx engine
       uses: docker/setup-buildx-action@v3
 
-    - name: Compile Rails Production Docker Image
+    - name: Authenticate with Docker Hub Engine
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Compile and Push Rails Production Docker Image
       uses: docker/build-push-action@v5
       with:
         context: ./rails-app
         file: ./rails-app/Dockerfile
-        push: true # We will switch this to true once you hook up your Docker Hub keys!
-        tags: rails-gallery:latest
+        push: true
+        tags: YOUR_DOCKERHUB_USERNAME_HERE/rails-gallery:latest
