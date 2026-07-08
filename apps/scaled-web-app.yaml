@@ -12,12 +12,11 @@ spec:
     metadata:
       labels:
         app: scaled-web
-        version: "2.0"
     spec:
       volumes:
         - name: data-volume
           persistentVolumeClaim:
-            claimName: unified-storage-pvc
+            claimName: project-storage-pvc
         - name: config-volume
           configMap:
             name: nginx-custom-config
