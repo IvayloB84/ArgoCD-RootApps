@@ -26,6 +26,10 @@ spec:
           value: "true"
         - name: RAILS_LOG_TO_STDOUT
           value: "true"
+        - name: SECRET_KEY_BASE
+          valueFrom:
+            name: rails-production-secrets
+            key: SECRET_KEY_BASE 
 ---
 apiVersion: v1
 kind: Service
