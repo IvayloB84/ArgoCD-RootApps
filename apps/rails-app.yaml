@@ -26,6 +26,8 @@ spec:
           value: "true"
         - name: RAILS_LOG_TO_STDOUT
           value: "true"
+        - name: DATABASE_URL
+          value: "sqlite3:/app/storage/production.sqlite3"
         # FIXED: Exact case-sensitive syntax matching Kubernetes validation specs
         - name: SECRET_KEY_BASE
           valueFrom:
@@ -53,7 +55,7 @@ metadata:
   namespace: default
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
-    traefik.ingress.kubernetes.io/router.middlewares: default-strip-rails-prefix@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: default-strip-rails-prefix@kubernetes
 spec:
   rules:
   - http:
