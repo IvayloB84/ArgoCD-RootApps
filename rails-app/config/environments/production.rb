@@ -67,4 +67,8 @@ Rails.application.configure do
 
   # config.relative_url_root = "/rails"
 
+  # Ensure your production cluster container serves local styles actively
+  config.public_file_server.enabled = true
+
+
 end
