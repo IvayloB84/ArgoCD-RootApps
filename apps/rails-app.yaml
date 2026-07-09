@@ -26,10 +26,12 @@ spec:
           value: "true"
         - name: RAILS_LOG_TO_STDOUT
           value: "true"
+        # FIXED: Exact case-sensitive syntax matching Kubernetes validation specs
         - name: SECRET_KEY_BASE
           valueFrom:
-            name: rails-production-secrets
-            key: SECRET_KEY_BASE 
+            secretKeyRef:
+              name: rails-production-secrets
+              key: SECRET_KEY_BASE
 ---
 apiVersion: v1
 kind: Service
