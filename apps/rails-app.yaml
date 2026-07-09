@@ -15,14 +15,17 @@ spec:
     spec:
       containers:
       - name: rails-container
-        image: ruby:3.2-alpine
-        # This raw loop runs a built-in lightweight network server on port 3000 that answers Traefik
-        command: ["sh", "-c", "while true; do echo -e 'HTTP/1.1 200 OK\nContent-Type: text/html\n\n<h1>Welcome to your automated Ruby on Rails Sandbox Cluster!</h1>' | nc -l -p 3000; done"]
+        image: docker.io/ivaylob84/rails-gallery:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 3000
         env:
         - name: RAILS_ENV
           value: "production"
+        - name: RAILS_SERVE_STATIC_FILES
+          value: "true"
+        - name: RAILS_LOG_TO_STDOUT
+          value: "true"
 ---
 apiVersion: v1
 kind: Service
@@ -44,6 +47,7 @@ metadata:
   namespace: default
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.middlewares: default-strip-rails-prefix@kubernetes
 spec:
   rules:
   - http:
