@@ -59,7 +59,7 @@ spec:
   - http:
       paths:
       - path: /rails
-        pathType: Prefix
+        pathType: Exact
         backend:
           service:
             name: rails-app-service
