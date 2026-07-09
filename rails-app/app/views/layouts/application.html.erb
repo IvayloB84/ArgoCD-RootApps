@@ -12,7 +12,8 @@
 
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
-    <%= stylesheet_link_tag :tailwind, "data-turbo-track": "reload" %>
+    <%# FIXED: Points the engine directly to the built file block %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   </head>
 
   <body class="bg-gray-50 min-h-screen text-gray-900">
