@@ -12,8 +12,8 @@
 
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
-    <%# FIXED: Added the official standalone Tailwind CDN script to instantly unlock styling %>
-    <script src="https://tailwindcss.com"></script>
+    <%# RESTORED: Standard local stylesheet tag tracking %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   </head>
 
   <body class="bg-gray-50 min-h-screen text-gray-900">
