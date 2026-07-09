@@ -61,9 +61,14 @@ metadata:
   name: rails-app-ingress
   namespace: default
   annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: web
+    # CHANGED: Tell Traefik to look for HTTPS traffic on the secure entrypoint
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.middlewares: default-strip-rails-prefix@kubernetescrd
 spec:
+  ingressClassName: traefik
+  # ADDED: Instruct Traefik to generate its native self-signed TLS layout headers
+  tls:
+    - {}
   rules:
   - http:
       paths:
