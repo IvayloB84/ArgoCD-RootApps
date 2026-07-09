@@ -77,4 +77,6 @@ Rails.application.configure do
 
   config.assets.compile = true
 
+  config.assets.gzip = false
+
 end
