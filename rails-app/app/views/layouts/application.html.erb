@@ -12,8 +12,12 @@
 
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
-    <% # FIXED: Clean explicit path compilation that maps cleanly over your Traefik network layers %>
-    <link rel="stylesheet" href="<%= asset_path('tailwind.css') %>" data-turbo-track="reload">
+    <%# FIXED: Local laptop uses the fast compiler, while K3s production loads the raw static path %>
+    <% if Rails.env.development? %>
+      <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <% else %>
+      <link rel="stylesheet" href="/assets/tailwind.css" data-turbo-track="reload">
+    <% end %>
   </head>
 
   <body class="bg-gray-50 min-h-screen text-gray-900">
