@@ -61,7 +61,7 @@ metadata:
   name: rails-app-ingress
   namespace: default
   annotations:
-    # KEEP this line to ensure the router listens on HTTP port 8080
+    # Point directly to your standard HTTP entrypoint
     traefik.ingress.kubernetes.io/router.entrypoints: web
 spec:
   ingressClassName: traefik
@@ -75,7 +75,6 @@ spec:
             name: rails-app-service
             port:
               number: 80
-
 ---
 # ADDED: Allocates a permanent 1GB local hard drive slice inside K3s
 apiVersion: v1
