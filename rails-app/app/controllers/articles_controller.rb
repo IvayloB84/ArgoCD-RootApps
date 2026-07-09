@@ -8,15 +8,12 @@ class ArticlesController < ApplicationController
     @article = Article.find(params[:id])
   end
 
-  # FIXED: Initializes a blank article instance object for your HTML form layout
   def new
     @article = Article.new
   end
 
-  # ADDED: Captures the submitted form fields and saves them to your local database file
   def create
     @article = Article.new(article_params)
-
     if @article.save
       redirect_to articles_path
     else
@@ -25,11 +22,27 @@ class ArticlesController < ApplicationController
   end
 
   def edit
+    @article = Article.find(params[:id])
+  end
+
+  def update
+    @article = Article.find(params[:id])
+    if @article.update(article_params)
+      redirect_to article_path(@article)
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  # FIXED: Perfectly enclosed and isolated destroy method action
+  def destroy
+    @article = Article.find(params[:id])
+    @article.destroy
+    redirect_to articles_path, status: :see_other
   end
 
   private
 
-  # ADDED: Strong parameters security barrier protecting your article columns
   def article_params
     params.expect(article: [ :title, :body ])
   end

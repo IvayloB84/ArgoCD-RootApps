@@ -1,5 +1,8 @@
 # app/models/article.rb
 class Article < ApplicationRecord
-  # ADDED: Establishes a one-to-many relationship with the comment model
   has_many :comments, dependent: :destroy
+
+  # FIXED: Blocks any title or body content shorter than 10 symbols/characters
+  validates :title, presence: true, length: { minimum: 10 }
+  validates :body,  presence: true, length: { minimum: 10 }
 end

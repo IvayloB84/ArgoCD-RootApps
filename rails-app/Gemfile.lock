@@ -210,6 +210,16 @@ GEM
     sqlite3 (2.9.5-x86_64-darwin)
     sqlite3 (2.9.5-x86_64-linux-gnu)
     sqlite3 (2.9.5-x86_64-linux-musl)
+    tailwindcss-rails (4.6.0)
+      railties (>= 7.0.0)
+      tailwindcss-ruby (~> 4.0)
+    tailwindcss-ruby (4.3.1)
+    tailwindcss-ruby (4.3.1-aarch64-linux-gnu)
+    tailwindcss-ruby (4.3.1-aarch64-linux-musl)
+    tailwindcss-ruby (4.3.1-arm64-darwin)
+    tailwindcss-ruby (4.3.1-x86_64-darwin)
+    tailwindcss-ruby (4.3.1-x86_64-linux-gnu)
+    tailwindcss-ruby (4.3.1-x86_64-linux-musl)
     thor (1.5.0)
     timeout (0.6.1)
     tsort (0.2.0)
@@ -240,6 +250,7 @@ DEPENDENCIES
   puma (>= 5.0)
   rails (~> 8.1.3)
   sqlite3 (>= 2.1)
+  tailwindcss-rails (~> 4.6)
   tzinfo-data
 
 CHECKSUMS
@@ -317,6 +328,14 @@ CHECKSUMS
   sqlite3 (2.9.5-x86_64-darwin) sha256=8e9caae38bd7ebb29cbeee3e7ab1d12dc2327d9a1b92c7fcf0dda05589627a81
   sqlite3 (2.9.5-x86_64-linux-gnu) sha256=233dbcb6714148dd23bc5aeb33e8efd6eac974969564ddd5794c23d5f52b231e
   sqlite3 (2.9.5-x86_64-linux-musl) sha256=e7d3a7474e8af0f96150c21abc203fbab5437206bfcdf11deab7741c0ca516f2
+  tailwindcss-rails (4.6.0) sha256=d99512867173d55c5ef8890427682299d8539f550cec1408b3d8667a538bd365
+  tailwindcss-ruby (4.3.1) sha256=ced3198e057da98f21cb281f4821ac8882a2899047066895ba181caf312620c1
+  tailwindcss-ruby (4.3.1-aarch64-linux-gnu) sha256=b42af5fdb7ade3f3f70cda217c288986cc6b773601437b8deb80ea229a96680c
+  tailwindcss-ruby (4.3.1-aarch64-linux-musl) sha256=2854eec6704d5773346d44cf884944e1f90b1b195327e9cfa207cba614c024ab
+  tailwindcss-ruby (4.3.1-arm64-darwin) sha256=477ef19dde7fa4db32a0f916c02398e5fcc6af7f18d5e773012d93d6b96ecfa3
+  tailwindcss-ruby (4.3.1-x86_64-darwin) sha256=6443a552bc00581dd8513fc42212b80ea16329f4f89e47a27835edd7bf95888b
+  tailwindcss-ruby (4.3.1-x86_64-linux-gnu) sha256=22a208da614b7767cee504ab9dae2ab0d8299fdf633c045c6f8357de81d0506f
+  tailwindcss-ruby (4.3.1-x86_64-linux-musl) sha256=1adcb5df5f9a6a85a81dc9e5102ce7e4f7a1415f477f1a6b22b52ee49c351ee6
   thor (1.5.0) sha256=e3a9e55fe857e44859ce104a84675ab6e8cd59c650a49106a05f55f136425e73
   timeout (0.6.1) sha256=78f57368a7e7bbadec56971f78a3f5ecbcfb59b7fcbb0a3ed6ddc08a5094accb
   tsort (0.2.0) sha256=9650a793f6859a43b6641671278f79cfead60ac714148aabe4e3f0060480089f

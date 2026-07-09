@@ -1,36 +1,52 @@
 <%# app/views/articles/new.html.erb %>
-<h1>Write New Article</h1>
-
-<%= form_with model: @article, url: articles_path do |form| %>
-  <% if @article.errors.any? %>
-    <div style="color: red;">
-      <h2><%= pluralize(@article.errors.count, "error") %> prohibited this article from being saved:</h2>
-      <ul>
-        <% @article.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
-
-  <div>
-    <%= form.label :title %><br>
-    <%= form.text_field :title, style: "width: 100%; max-width: 400px; padding: 5px;" %>
+<div class="max-w-2xl mx-auto px-4 py-8">
+  <!-- Navigation Top Bar -->
+  <div class="mb-6">
+    <%= link_to "← Back to feed", articles_path, class: "text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors" %>
   </div>
 
-  <br>
+  <!-- Form Card Wrapper Container -->
+  <div class="bg-white shadow rounded-lg border border-gray-200 p-6 md:p-8">
+    <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight mb-6">Write New Article</h1>
 
-  <div>
-    <%= form.label :body %><br>
-    <%= form.text_area :body, rows: 6, style: "width: 100%; max-width: 400px; padding: 5px;" %>
+    <%= form_with model: @article, url: articles_path, class: "space-y-6" do |form| %>
+      
+      <!-- Data Model Validations Display Alerts -->
+      <% if @article.errors.any? %>
+        <div class="rounded-md bg-red-50 p-4 border border-red-200">
+          <div class="flex">
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-800">
+                <%= pluralize(@article.errors.count, "error") %> prohibited this article from being saved:
+              </h3>
+              <div class="mt-2 text-sm text-red-700">
+                <ul class="list-disc pl-5 space-y-1">
+                  <% @article.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Input Title Box Field -->
+      <div>
+        <%= form.label :title, "Article Title", class: "block text-sm font-semibold text-gray-700 mb-1" %>
+        <%= form.text_field :title, placeholder: "e.g., Scaling K3s with GitOps Automation", class: "block w-full rounded-md border border-gray-300 shadow-sm p-2.5 bg-white text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm placeholder-gray-400" %>
+      </div>
+
+      <!-- Input Content Text Area Block -->
+      <div>
+        <%= form.label :body, "Article Body Content", class: "block text-sm font-semibold text-gray-700 mb-1" %>
+        <%= form.text_area :body, rows: 8, placeholder: "Type your main markdown text blocks or system architecture notes here...", class: "block w-full rounded-md border border-gray-300 shadow-sm p-2.5 bg-white text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm placeholder-gray-400" %>
+      </div>
+
+      <!-- Submit Action Button Trigger -->
+      <div class="pt-2">
+        <%= form.submit "Publish Article", class: "w-full sm:w-auto inline-flex justify-center items-center px-5 py-2.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors cursor-pointer" %>
+      </div>
+    <% end %>
   </div>
-
-  <br>
-
-  <div>
-    <%= form.submit "Publish Article" %>
-  </div>
-<% end %>
-
-<br>
-<%= link_to "Back to feed", articles_path %>
+</div>

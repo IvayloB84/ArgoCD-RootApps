@@ -18,3 +18,5 @@ group :development, :test do
 end
 # Build Sync: 1783574551
 # Rebuild: 1783574813
+
+gem "tailwindcss-rails", "~> 4.6"
