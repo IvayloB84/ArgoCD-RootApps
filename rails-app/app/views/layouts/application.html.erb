@@ -12,17 +12,6 @@
 
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
-    <% if Rails.env.development? %>
-      <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
-    <% else %>
-      <%# FIXED: Production uses the clean, official scriptless compilation engine directly in the browser %>
-      <script src="https://jsdelivr.net"></script>
-    <% end %>
+    <% # FIXED: Clean standard stylesheet tag handling that maps dynamically everywhere %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   </head>
-
-  <body class="bg-gray-50 min-h-screen text-gray-900">
-    <main>
-      <%= yield %>
-    </main>
-  </body>
-</html>
