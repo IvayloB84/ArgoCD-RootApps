@@ -1,0 +1,11 @@
+<%# app/views/products/show.html.erb %>
+<h1><%= @product.name %></h1>
+
+<ul>
+  <li><strong>Database ID:</strong> <%= @product.id %></li>
+  <li><strong>Created At:</strong> <%= @product.created_at.strftime("%B %d, %Y at %H:%M") %></li>
+</ul>
+
+<br>
+<%= link_to "Edit this product", edit_product_path(@product) if respond_to?(:edit_product_path) %> |
+<%= link_to "Back to products", products_path %>

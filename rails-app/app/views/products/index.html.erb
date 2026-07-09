@@ -3,12 +3,11 @@
 
 <div id="products">
   <% @products.each do |product| %>
-    <div>
-      <strong><%= product.name %></strong>
+    <div style="margin-bottom: 10px;">
+      <%= link_to product.name, product_path(product) %>
     </div>
   <% end %>
 </div>
 
 <br>
-<%# ADDED: This helper draws a click button leading to your new form template %>
 <%= link_to "New Product", new_product_path %>
