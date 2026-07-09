@@ -12,6 +12,14 @@
 
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
-    <% # FIXED: Clean standard stylesheet tag handling that maps dynamically everywhere %>
+    <%# FIXED: Standard stylesheet asset helper linking to your tailwind stream %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   </head>
+
+  <body class="bg-gray-50 min-h-screen text-gray-900">
+    <main>
+      <%# FIXED: This injects your actual articles, forms, and pages back into the layout %>
+      <%= yield %>
+    </main>
+  </body>
+</html>
