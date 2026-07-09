@@ -19,6 +19,13 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
+        # FIXED: Forces the container to compile its static manifest rules right at cluster startup boot time
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            bin/rails assets:precompile &&
+            bin/rails db:migrate &&
+            bundle exec rails server -b 0.0.0.0 -p 3000
         env:
         - name: RAILS_ENV
           value: "production"
