@@ -73,9 +73,9 @@ Rails.application.configure do
   # Ensure your production cluster container serves local styles actively
   config.public_file_server.enabled = true
 
-  config.public_file_server.index_name = false
+  # config.public_file_server.index_name = false
 
-  config.assets.compile = true
+  config.assets.compile = false
 
   config.assets.gzip = false
 
