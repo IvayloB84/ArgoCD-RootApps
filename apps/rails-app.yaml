@@ -66,7 +66,6 @@ metadata:
   name: rails-app-ingress
   namespace: default
   annotations:
-    # Point directly to your standard HTTP entrypoint
     traefik.ingress.kubernetes.io/router.entrypoints: web
 spec:
   ingressClassName: traefik
@@ -74,6 +73,13 @@ spec:
   - http:
       paths:
       - path: /rails
+        pathType: Prefix
+        backend:
+          service:
+            name: rails-app-service
+            port:
+              number: 80
+      - path: /assets
         pathType: Prefix
         backend:
           service:
