@@ -12,11 +12,11 @@
 
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
-    <%# FIXED: Local laptop uses the fast compiler, while K3s production loads the raw static path %>
     <% if Rails.env.development? %>
       <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <% else %>
-      <link rel="stylesheet" href="/assets/tailwind.css" data-turbo-track="reload">
+      <%# FIXED: Production uses the clean, official scriptless compilation engine directly in the browser %>
+      <script src="https://jsdelivr.net"></script>
     <% end %>
   </head>
 
