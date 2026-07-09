@@ -22,6 +22,7 @@ spec:
         command: ["/bin/sh", "-c"]
         args:
           - |
+            mkdir -p public/assets;
             bin/rails assets:precompile;
             cp app/assets/builds/tailwind.css public/assets/tailwind.css 2>/dev/null || true;
             bin/rails db:migrate;
