@@ -1,0 +1,50 @@
+<%# app/views/articles/show.html.erb %>
+<p><%= link_to "← Back to Articles Feed", articles_path %></p>
+
+<h1><%= @article.title %></h1>
+
+<div style="margin: 20px 0; padding: 15px; background-color: #f9f9f9; border-left: 4px solid #ccc; max-width: 600px;">
+  <p style="white-space: pre-wrap; font-size: 1.1em; line-height: 1.6;"><%= @article.body %></p>
+</div>
+
+<hr style="margin: 40px 0 20px 0; border: 0; border-top: 1px solid #eee;">
+
+<!-- 1. ACTIVE DISPLAY LOOP: Prints comments tied to this article record -->
+<h2>Comments (<%= @article.comments.count %>)</h2>
+<div id="comments" style="margin-bottom: 30px;">
+  <% @article.comments.each do |comment| %>
+    <% if comment.persisted? %>
+      <div style="background: #f1f1f1; padding: 10px; margin-bottom: 10px; border-radius: 4px; max-width: 500px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <p><strong><%= comment.commenter %></strong> said:</p>
+          
+          <% # ADDED: Clean fallback button to delete this specific nested comment row %>
+          <%= button_to "Delete", [comment.article, comment], method: :delete, form: { data: { confirm: "Are you sure?" } }, style: "color: red; background: none; border: none; cursor: pointer; text-decoration: underline;" %>
+        </div>
+        <p style="white-space: pre-wrap;"><%= comment.body %></p>
+      </div>
+    <% end %>
+  <% end %>
+</div>
+
+<!-- 2. INTERACTIVE ENTRY FORM: Submits comments natively under this article route scope -->
+<h3>Leave a Comment</h3>
+<%= form_with model: [ @article, @article.comments.build ] do |form| %>
+  <div>
+    <%= form.label :commenter, "Your Name" %><br>
+    <%= form.text_field :commenter, style: "width: 100%; max-width: 300px; padding: 5px;" %>
+  </div>
+
+  <br>
+
+  <div>
+    <%= form.label :body, "Comment Text" %><br>
+    <%= form.text_area :body, rows: 4, style: "width: 100%; max-width: 400px; padding: 5px;" %>
+  </div>
+
+  <br>
+
+  <div>
+    <%= form.submit "Post Comment" %>
+  </div>
+<% end %>

@@ -1,0 +1,19 @@
+<%# app/views/articles/index.html.erb %>
+<h1>Articles Feed</h1>
+
+<div id="articles">
+  <% if @articles.any? %>
+    <% @articles.each do |article| %>
+      <div style="margin-bottom: 20px; padding: 10px; border-bottom: 1px solid #ccc;">
+        <h2><%= article.title %></h2>
+        <p><%= truncate(article.body, length: 100) %></p>
+        <%= link_to "Read Article", article_path(article) %>
+      </div>
+    <% end %>
+  <% else %>
+    <p>No articles posted yet.</p>
+  <% end %>
+</div>
+
+<br>
+<%= link_to "Write New Article", new_article_path %>
