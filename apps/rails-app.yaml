@@ -61,12 +61,10 @@ metadata:
   name: rails-app-ingress
   namespace: default
   annotations:
-    # RESTORED: Point back to the open HTTP port 8080 entrypoint
+    # KEEP this line to ensure the router listens on HTTP port 8080
     traefik.ingress.kubernetes.io/router.entrypoints: web
-    traefik.ingress.kubernetes.io/router.middlewares: default-strip-rails-prefix@kubernetescrd
 spec:
   ingressClassName: traefik
-  # REMOVED: Deleted the tls: block since port 443 isn't bound to your laptop
   rules:
   - http:
       paths:
@@ -77,6 +75,7 @@ spec:
             name: rails-app-service
             port:
               number: 80
+
 ---
 # ADDED: Allocates a permanent 1GB local hard drive slice inside K3s
 apiVersion: v1
