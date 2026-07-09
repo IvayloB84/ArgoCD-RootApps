@@ -2,6 +2,6 @@ class ProductsController < ApplicationController
   allow_unauthenticated_access only: %i[ index ]
 
   def index
-  @products = Products.all
+    @products = Product.all
   end
 end
