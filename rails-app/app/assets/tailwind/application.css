@@ -1,6 +1,6 @@
 /* app/assets/tailwind/application.css */
 @import "tailwindcss";
 
-/* FIXED: Force the v4 standalone compiler to scan your new articles folders */
-@source "../views/articles/**/*.{erb,html}";
-@source "../views/layouts/**/*.{erb,html}";
+/* FIXED: Tailwind v4 native source trackers tracking your template views */
+@source "../views/**/*.erb";
+@source "../views/articles/**/*.html.erb";
