@@ -70,5 +70,6 @@ Rails.application.configure do
   # Ensure your production cluster container serves local styles actively
   config.public_file_server.enabled = true
 
+  config.assets.compile = true
 
 end
