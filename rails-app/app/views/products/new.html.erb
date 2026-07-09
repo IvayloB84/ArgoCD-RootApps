@@ -1,0 +1,18 @@
+<%# app/views/products/new.html.erb %>
+<h1>New Product</h1>
+
+<%= form_with model: @product, url: products_path do |form| %>
+  <div>
+    <%= form.label :name %><br>
+    <%= form.text_field :name %>
+  </div>
+
+  <br>
+
+  <div>
+    <%= form.submit "Create Product" %>
+  </div>
+<% end %>
+
+<br>
+<%= link_to "Back to products", products_path %>
