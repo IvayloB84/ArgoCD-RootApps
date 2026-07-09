@@ -68,7 +68,7 @@ Rails.application.configure do
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 
-  config.relative_url_root = "/rails"
+  # config.relative_url_root = "/rails"
 
   # Ensure your production cluster container serves local styles actively
   config.public_file_server.enabled = true

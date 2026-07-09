@@ -12,8 +12,8 @@
 
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
-    <% # FIXED: Restored clean canonical Propshaft asset mapping link tag %>
-    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <% # FIXED: Clean explicit path compilation that maps cleanly over your Traefik network layers %>
+    <link rel="stylesheet" href="<%= asset_path('tailwind.css') %>" data-turbo-track="reload">
   </head>
 
   <body class="bg-gray-50 min-h-screen text-gray-900">
