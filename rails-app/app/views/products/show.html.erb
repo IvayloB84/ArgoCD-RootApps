@@ -7,5 +7,11 @@
 </ul>
 
 <br>
-<%= link_to "Edit this product", edit_product_path(@product) if respond_to?(:edit_product_path) %> |
-<%= link_to "Back to products", products_path %>
+<div style="display: flex; gap: 10px; align-items: center;">
+  <%= link_to "Edit this product", edit_product_path(@product) %> |
+  
+  <%# FIXED: Completely invisible button container that masquerades perfectly as a red link %>
+  <%= button_to "Destroy this product", product_path(@product), method: :delete, form: { data: { confirm: "Are you sure?" } }, style: "background: none; border: none; color: red; text-decoration: underline; font-family: inherit; font-size: inherit; cursor: pointer; padding: 0; margin: 0;" %> |
+  
+  <%= link_to "Back to products", products_path %>
+</div>

@@ -34,6 +34,14 @@ class ProductsController < ApplicationController
     end
   end
 
+  # ADDED: Finds the target item and wipes it from your permanent disk block
+  def destroy
+    @product = Product.find(params[:id])
+    @product.destroy
+
+    redirect_to products_path, status: :see_other
+  end
+  
   private
 
   def product_params
