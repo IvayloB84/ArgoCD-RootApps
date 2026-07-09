@@ -29,7 +29,7 @@ module RailsApp
     config.autoload_lib(ignore: %w[assets tasks])
 
     # ADDED: Instructs Rails to expect and serve everything under the /rails subpath
-    config.relative_url_root = "/rails"
+    # config.relative_url_root = "/rails"
 
     # Configuration for the application, engines, and railties goes here.
     #
