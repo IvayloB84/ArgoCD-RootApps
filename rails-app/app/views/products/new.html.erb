@@ -2,6 +2,18 @@
 <h1>New Product</h1>
 
 <%= form_with model: @product, url: products_path do |form| %>
+  <%# ADDED: Error message loops %>
+  <% if @product.errors.any? %>
+    <div style="color: red;">
+      <h2><%= pluralize(@product.errors.count, "error") %> prohibited this product from being saved:</h2>
+      <ul>
+        <% @product.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
   <div>
     <%= form.label :name %><br>
     <%= form.text_field :name %>
