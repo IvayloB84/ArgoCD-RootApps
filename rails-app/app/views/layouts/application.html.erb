@@ -12,8 +12,8 @@
 
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
-    <% # FIXED: Explicitly appends your /rails path prefix onto the production asset tracking link %>
-    <link rel="stylesheet" href="/rails<%= asset_path('tailwind.css') %>" data-turbo-track="reload">
+    <% # FIXED: Restored clean canonical Propshaft asset mapping link tag %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   </head>
 
   <body class="bg-gray-50 min-h-screen text-gray-900">
