@@ -1,7 +1,8 @@
 <%# app/views/products/new.html.erb %>
 <h1>New Product</h1>
 
-<%= form_with model: @product, url: products_path do |form| %>
+<%# FIXED: Added explicit '/rails' scope path matching your Traefik proxy rules %>
+<%= form_with model: @product, url: "/rails/products" do |form| %>
   <div>
     <%= form.label :name %><br>
     <%= form.text_field :name %>
@@ -15,4 +16,4 @@
 <% end %>
 
 <br>
-<%= link_to "Back to products", products_path %>
+<%= link_to "Back to products", "/rails/products" %>
