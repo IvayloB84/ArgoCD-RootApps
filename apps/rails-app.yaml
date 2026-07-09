@@ -61,14 +61,12 @@ metadata:
   name: rails-app-ingress
   namespace: default
   annotations:
-    # CHANGED: Tell Traefik to look for HTTPS traffic on the secure entrypoint
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    # RESTORED: Point back to the open HTTP port 8080 entrypoint
+    traefik.ingress.kubernetes.io/router.entrypoints: web
     traefik.ingress.kubernetes.io/router.middlewares: default-strip-rails-prefix@kubernetescrd
 spec:
   ingressClassName: traefik
-  # ADDED: Instruct Traefik to generate its native self-signed TLS layout headers
-  tls:
-    - {}
+  # REMOVED: Deleted the tls: block since port 443 isn't bound to your laptop
   rules:
   - http:
       paths:
