@@ -4,7 +4,7 @@ metadata:
   name: rails-app-deployment
   namespace: default
 spec:
-  replicas: 2
+  replicas: 1 # Set to 1 for SQLite so two pods don't lock the same database file
   selector:
     matchLabels:
       app: rails-web
@@ -28,12 +28,19 @@ spec:
           value: "true"
         - name: DATABASE_URL
           value: "sqlite3:/app/storage/production.sqlite3"
-        # FIXED: Exact case-sensitive syntax matching Kubernetes validation specs
         - name: SECRET_KEY_BASE
           valueFrom:
             secretKeyRef:
               name: rails-production-secrets
               key: SECRET_KEY_BASE
+        # Mounts the persistent disk block directly inside the container
+        volumeMounts:
+        - name: sqlite-storage
+          mountPath: /app/storage
+      volumes:
+      - name: sqlite-storage
+        persistentVolumeClaim:
+          claimName: rails-sqlite-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -67,3 +74,16 @@ spec:
             name: rails-app-service
             port:
               number: 80
+---
+# ADDED: Allocates a permanent 1GB local hard drive slice inside K3s
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rails-sqlite-pvc
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
