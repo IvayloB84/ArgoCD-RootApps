@@ -19,8 +19,15 @@ kubeconfig*
 .DS_Store
 Thumbs.db
 
-# Ignore local environment bootstrap scripts
+# Ignore local environment variables & scripts
 start-cluster.sh
 start-cluster-prod.sh
 
-rails-app-code/
+# Ignore local Ruby on Rails development runtime noise
+rails-articles-project/log/*
+rails-articles-project/tmp/*
+rails-articles-project/storage/*
+rails-articles-project/db/*.sqlite3
+rails-articles-project/db/*.sqlite3-journal
+rails-articles-project/db/*.sqlite3-wal
+rails-articles-project/.byebug_history
