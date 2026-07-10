@@ -24,3 +24,5 @@ gem "tailwindcss-rails", "~> 4.6"
 gem "image_processing", "~> 1.2"
 
 gem "bcrypt", "~> 3.1"
+
+gem "prometheus-client", "~> 4.2"
