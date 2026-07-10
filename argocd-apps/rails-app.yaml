@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://github.com/IvayloB84/ArgoCD-RootApps'
     targetRevision: main
-    path: rails-app         # Points ONLY to your Rails 8 folder
+    path: rails-app-chart         # Points ONLY to your Rails 8 folder
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: default

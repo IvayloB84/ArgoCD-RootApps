@@ -1,0 +1,17 @@
+image:
+  repository: docker.io/ivaylob84/rails-gallery
+  tag: latest
+  pullPolicy: Always
+
+rails:
+  env: production
+  serveStaticFiles: "true"
+  logToStdout: "true"
+
+storage:
+  className: local-path
+  size: 10Gi
+
+ingress:
+  className: traefik
+  entrypoint: web

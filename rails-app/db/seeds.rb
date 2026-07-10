@@ -1,9 +1,21 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+# db/seeds.rb
+
+puts "[SEED] Initializing database seeding sequence..."
+
+# 🔐 Reads credentials from system environment variables with a safe fallback
+admin_password = ENV.fetch("ADMIN_SEED_PASSWORD") { "my_password_for_rails" }
+admin_email    = ENV.fetch("ADMIN_SEED_EMAIL")    { "ivaylo.bumbovski@gmail.com" }
+
+admin_user = User.find_or_create_by!(username: "admin") do |user|
+  user.email_address = admin_email
+  user.date_of_birth = "1984-07-19"
+  user.password = admin_password
+  user.password_confirmation = admin_password
+  user.admin = true
+end
+
+if admin_user.persisted?
+  puts "[SEED] Default system administrator profile confirmed: username 'admin'"
+else
+  puts "[SEED] Critical failure during root admin seeding operation."
+end

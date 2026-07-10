@@ -1,0 +1,6 @@
+apiVersion: v3
+name: rails-gallery
+description: A production-grade Helm chart for the Rails 8 Articles application
+type: application
+version: 1.0.0
+appVersion: "8.0.0"
