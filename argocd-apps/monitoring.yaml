@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.io' # Official trusted Helm repo
+    repoURL: 'https://prometheus-community.github.io/helm-charts'
     chart: kube-prometheus-stack
     targetRevision: 69.3.1                                        # Stable long-term release
     helm:
@@ -27,7 +27,7 @@ spec:
                     requests:
                       storage: 5Gi                                # Dynamic volume allocation
   destination:
-    server: 'https://default.svc'
+    server: 'https://kubernetes.default.svc'
     namespace: argocd                                             # Cluster management namespace
   syncPolicy:
     automated:
