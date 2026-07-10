@@ -26,7 +26,7 @@ jobs:
         context: ./rails-articles-project
         file: ./rails-articles-project/Dockerfile
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/rails-gallery:latest
+        tags: ivaylob84/rails-gallery:latest
         # High-Speed GitHub Cache Layer Mechanics
         cache-from: type=gha
         cache-to: type=gha,mode=max
