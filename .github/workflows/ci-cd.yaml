@@ -23,10 +23,10 @@ jobs:
     - name: Compile and Push Rails Production Docker Image
       uses: docker/build-push-action@v5
       with:
-        context: ./rails-app
-        file: ./rails-app/Dockerfile
+        context: ./rails-articles-project
+        file: ./rails-articles-project/Dockerfile
         push: true
-        tags: ivaylob84/rails-gallery:latest
+        tags: ${{ secrets.DOCKER_USERNAME }}/rails-gallery:latest
         # High-Speed GitHub Cache Layer Mechanics
         cache-from: type=gha
         cache-to: type=gha,mode=max
