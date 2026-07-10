@@ -1,12 +1,25 @@
 # config/routes.rb
 Rails.application.routes.draw do
+  
   scope "/rails" do
-    # Directs http://localhost:8080/rails or port 3000 to your articles list
     root "articles#index"
 
-    # NESTED RESOURCES: Comments are nested completely inside Articles
+    # Scoped Sign Up pathways
+    get  "/signup", to: "registrations#new", as: :signup
+    post "/signup", to: "registrations#create"
+
+    # FIXED: Added explicit sign-out routing paths to bypass browser thread locks
+    get    "/signout", to: "sessions#destroy", as: :signout
+    delete "/signout", to: "sessions#destroy"
+
+    # Standard session configuration loops
+    resource :session
+    resources :passwords, param: :token
+
     resources :articles do
       resources :comments
     end
   end
+
+  get "up" => "rails/health#show", as: :rails_health_check
 end

@@ -1,5 +1,8 @@
 # app/controllers/articles_controller.rb
 class ArticlesController < ApplicationController
+  # FIXED: Allows anyone to see the feed and read individual articles anonymously!
+  allow_unauthenticated_access only: [ :index, :show ]
+
   def index
     @articles = Article.all
   end
