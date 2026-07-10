@@ -15,10 +15,9 @@ RUN bundle config set --local deployment 'true' \
 # 4. Copy your actual Ruby on Rails source code files
 COPY . .
 
-# 5. FIXED: Injected a mock fallback token to bypass encryption initializer crashes on cloud builds
+# 5. FIXED: Use the official Rails 8 dummy compilation variable to allow database-less asset builds
 ENV RAILS_ENV=production
-RUN SECRET_KEY_BASE=dummy_token_for_asset_compilation_only bundle exec rails tailwindcss:build
-RUN SECRET_KEY_BASE=dummy_token_for_asset_compilation_only bundle exec rails assets:precompile
+RUN SECRET_KEY_BASE_DUMMY=1 bundle exec rails assets:precompile
 
 EXPOSE 3000
 CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
