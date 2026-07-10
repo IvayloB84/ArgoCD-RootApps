@@ -27,5 +27,13 @@ test:
 # Similarly, if you deploy your application as a Docker container, you must
 # ensure the database is located in a persisted volume.
 production:
-  <<: *default
-  # database: path/to/persistent/storage/production.sqlite3
+  adapter: sqlite3
+  database: <%= ENV.fetch("DATABASE_URL") { "storage/production.sqlite3" } %>
+  timeout: 5000                  # Keeps trying for 5 seconds before throwing a lock error
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  threadsafety: true
+  pragmas:
+    journal_mode: wal            # Activates WAL mode so reads & writes don't block each other
+    synchronous: normal          # Optimizes disk write frequencies for containerized local-paths
+    mmap_size: 134217728         # Maps a 128MB fast memory cache for high-speed indexing lookups
+    journal_size_limit: 67108864 # Caps the companion log size at 64MB to preserve disk limits
