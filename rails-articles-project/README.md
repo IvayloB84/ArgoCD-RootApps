@@ -6,12 +6,11 @@ A production-ready, minimal Ruby on Rails 8 blogging template architecture engin
 
 ## 🏛️ Architecture Overview & How It Works
 
-This repository is structured as a unified GitOps ecosystem that separates your active development code from your production infrastructure parameters while keeping them contained within a single repository:
+This project is structured as a component inside a unified GitOps ecosystem that separates your active development code from production infrastructure parameters:
 
-1. **The Codebase Core (`rails-articles-project/`)**: A pure, standalone Rails 8 application setup. It runs locally on your PC, compiles static files using Propshaft, and packages into a lightweight multi-stage Docker layer on push.
-2. **The GitOps Orchestrator (`argocd-apps/` & `bootstrap/`)**: Leverages the **App-of-Apps Pattern**. A master controller application monitors the repository and dynamically provisions independent child application cards (`rails-gallery-app` and `project-web-app`) to completely isolate system lifecycles.
-3. **The Variable-Driven Blueprint (`rails-app-chart/`)**: A production-grade **Helm Chart** package. Instead of hardcoding drive names, values are managed dynamically inside a central `values.yaml` file, supporting effortless adjustments for multi-environment (Dev/Prod) cluster instances.
-4. **Anonymized Infrastructure (`k3d-config.yaml`)**: Uses environment variables inside a native cluster setup script. Your private drive layout is hidden from Git using K3s `local-path` dynamic volume provisioners.
+1. **The Codebase Core (`rails-articles-project/`)**: A standalone Rails 8 application setup. It runs locally on your PC, compiles static files using Propshaft, and packages into a lightweight multi-stage Docker layer on push.
+2. **The GitOps Orchestrator**: Managed via the parent repository's master controller application using the **App-of-Apps Pattern** to monitor repository states and isolate lifecycles.
+3. **The Parameterized Blueprint (`rails-app-chart/`)**: A production-grade **Helm Chart** package located outside this folder that dynamically maps ingress routing, persistent claims, and custom scrapers.
 
 ---
 
@@ -26,7 +25,7 @@ This repository is structured as a unified GitOps ecosystem that separates your 
 
 ## 🛠️ Local Workstation Control Commands
 
-Always execute development sessions exclusively from inside your local **`rails-articles-project/`** folder workspace using these command controls:
+Always execute development sessions exclusively from inside this **`rails-articles-project/`** folder workspace using these command controls:
 
 ```bash
 # 1. Spin up your asset-aware unified developer watchers preview session
@@ -49,26 +48,10 @@ To scale a serverless database engine smoothly inside a containerized Kubernetes
 
 ---
 
-## 🏗️ Production GitOps Pipeline Deployment Loop
-
-Whenever you make structural view layout or controller logic adjustments, execute this unified command sequence from your **repository root directory** to commit your code, build the container image, and sync your cluster over port `8080`:
-
-```bash
-# 1. Stage, commit, and push your unified codebase modifications
-git add . && git commit -m "feat: deploy system upgrades to production" && git push origin main
-
-# 2. Build your production container layer directly from your repository root context
-cd rails-articles-project && docker build -t ivaylob84/rails-gallery:latest . && docker push ivaylob84/rails-gallery:latest && cd ..
-
-# 3. Bypass the 3-minute ArgoCD polling delay to trigger an instant cluster refresh
-kubectl patch application root-bootstrap-app -n argocd --type merge -p '{"metadata":{"annotations":{"argocd.argoproj.io/refresh":"normal"}}}'
-```
-
-### ⏳ Pod Rollout Lifecycle Management
-Because your production Helm chart is configured with a strict `Recreate` deployment strategy, the cluster handles lifecycles gracefully without volume locking conflicts:
-1. Pushing a new container image will trigger the cluster rollout.
-2. The running Rails pod terminates automatically, releasing its volume disk lock and flushing existing SQLite tables cleanly.
-3. The fresh container initializes onto your persistent **10Gi** storage block and automatically fires `bin/rails db:migrate` on boot.
+## 📊 Telemetry and Custom Prometheus Monitoring
+The application includes integrated performance metrics hooks to stream system data directly to Grafana over port `8888`:
+- **Middleware Exporter**: Powered by the `prometheus-client` engine initialized via `config/initializers/prometheus.rb` to render raw application statistics on the `/metrics` path.
+- **ServiceMonitor Scraper**: Deployed natively inside the Helm templates layer with the correct labels (`release: cluster-monitoring-app`) to let the Prometheus Operator dynamically fetch performance data logs every 15 seconds.
 
 ---
 
