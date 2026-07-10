@@ -4,7 +4,10 @@ metadata:
   name: rails-app-deployment
   namespace: default
 spec:
+  revisionHistoryLimit: 2
   replicas: 1 # Set to 1 for SQLite so two pods don't lock the same database file
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: rails-web
@@ -86,16 +89,3 @@ spec:
             name: rails-app-service
             port:
               number: 80
----
-# ADDED: Allocates a permanent 1GB local hard drive slice inside K3s
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: rails-sqlite-pvc
-  namespace: default
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi

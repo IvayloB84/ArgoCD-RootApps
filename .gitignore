@@ -18,3 +18,7 @@ kubeconfig*
 # System OS Files
 .DS_Store
 Thumbs.db
+
+# Ignore local environment bootstrap scripts
+start-cluster.sh
+start-cluster-prod.sh
