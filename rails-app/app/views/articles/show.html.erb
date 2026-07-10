@@ -21,7 +21,7 @@
       
       <!-- ARTICLE ACTION LINKS: Wrapped tightly and isolated to prevent parent flex collapse -->
       <div class="flex items-center text-sm font-semibold shrink-0">
-        <% if authenticated? && (@article.user_id == Current.user.id || Current.user.username == "IvayloB84") %>
+          <% if authenticated? && (@article.user_id == Current.user.id || Current.user.admin?) %>
           <div class="flex items-center space-x-3">
             <%= link_to "Edit Article", edit_article_path(@article), class: "text-blue-600 hover:text-blue-800 transition-colors" %>
             <span class="text-gray-300">|</span>

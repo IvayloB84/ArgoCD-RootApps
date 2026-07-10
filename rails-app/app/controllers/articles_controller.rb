@@ -56,7 +56,7 @@ class ArticlesController < ApplicationController
     # FIXED: True Authorization checkpoint method filter block
     def ensure_author
       @article = Article.find(params[:id])
-      return if Current.user.username == "IvayloB84"
+      return if Current.user.admin?
       
       # If the article's user ID doesn't match the current logged-in user, block them immediately!
       if @article.user_id != Current.user.id
