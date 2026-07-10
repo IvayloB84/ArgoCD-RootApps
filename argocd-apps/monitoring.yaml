@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cluster-monitoring-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.io' # Official trusted Helm repo
+    chart: kube-prometheus-stack
+    targetRevision: 69.3.1                                        # Stable long-term release
+    helm:
+      values: |
+        grafana:
+          persistence:
+            enabled: true
+            storageClassName: "local-path"
+            size: 2Gi
+        prometheus:
+          prometheusSpec:
+            storageSpec:
+              volumeClaimTemplate:
+                spec:
+                  storageClassName: "local-path"
+                  accessModes: ["ReadWriteOnce"]
+                  resources:
+                    requests:
+                      storage: 5Gi                                # Dynamic volume allocation
+  destination:
+    server: 'https://default.svc'
+    namespace: argocd                                             # Cluster management namespace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
