@@ -2,6 +2,7 @@ class User < ApplicationRecord
   has_secure_password
   has_many :sessions, dependent: :destroy
 
+  has_many :articles, dependent: :destroy
   # Core mandatory validation parameters
   validates :username, presence: true, uniqueness: true, length: { minimum: 3 }
   validates :date_of_birth, presence: true

@@ -1,6 +1,6 @@
 # app/controllers/registrations_controller.rb
 class RegistrationsController < ApplicationController
-  # Allow anyone to access the registration screen without being logged in
+  # FIXED: Grants explicit public access to the sign-up form and account generation loops!
   allow_unauthenticated_access only: [ :new, :create ]
 
   def new
@@ -11,7 +11,6 @@ class RegistrationsController < ApplicationController
     @user = User.new(registration_params)
 
     if @user.save
-      # Automatically log in the user upon successful registration
       start_new_session_for @user
       redirect_to articles_path, notice: "Account created successfully! Welcome aboard."
     else
@@ -21,7 +20,6 @@ class RegistrationsController < ApplicationController
 
   private
     def registration_params
-      # Whitelisting your exactly 3 required parameters
-      params.require(:user).permit(:username, :password, :date_of_birth, :email_address)
-    end
+      params.require(:user).permit(:username, :password, :password_confirmation, :date_of_birth, :email_address)
+  end
 end
