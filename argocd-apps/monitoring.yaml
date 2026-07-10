@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://prometheus-community.github.io/helm-charts'
     chart: kube-prometheus-stack
-    targetRevision: 69.3.1                                        # Stable long-term release
+    targetRevision: 69.3.1
     helm:
       values: |
         grafana:
@@ -19,7 +19,6 @@ spec:
         prometheus:
           prometheusSpec:
             retention: 1d
-            # CRITICAL K3S ROOTLESS FIX: Disables permission checks blocking the pod spawn
             securityContext:
               runAsUser: 0
               runAsGroup: 0
@@ -32,7 +31,6 @@ spec:
                   resources:
                     requests:
                       storage: 5Gi
-
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: argocd
@@ -40,3 +38,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
