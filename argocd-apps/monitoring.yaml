@@ -15,9 +15,10 @@ spec:
           persistence:
             enabled: true
             storageClassName: "local-path"
-            size: 2Gi
+            size: 500Mi
         prometheus:
           prometheusSpec:
+            retention: 1d
             storageSpec:
               volumeClaimTemplate:
                 spec:
@@ -25,7 +26,7 @@ spec:
                   accessModes: ["ReadWriteOnce"]
                   resources:
                     requests:
-                      storage: 5Gi                                # Dynamic volume allocation
+                      storage: 1Gi                                # Dynamic volume allocation
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: argocd                                             # Cluster management namespace
