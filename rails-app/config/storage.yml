@@ -1,0 +1,11 @@
+# config/storage.yml
+
+# Local storage configuration block for laptop development testing
+local:
+  service: Disk
+  root: <%= Rails.root.join("storage") %>
+
+# Production storage configuration block for your K3s cluster environment
+production:
+  service: Disk
+  root: <%= Rails.root.join("storage") %>

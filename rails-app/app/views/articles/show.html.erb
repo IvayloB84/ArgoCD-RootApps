@@ -5,10 +5,17 @@
     <%= link_to "← Back to Articles Feed", articles_path, class: "text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors" %>
   </div>
 
+  <!-- FIXED: Render cover photo banner elegantly at the top of the content stack -->
+  <% if @article.image.attached? %>
+    <div class="w-full mb-6 rounded-2xl overflow-hidden shadow-sm max-h-96 border border-gray-200">
+      <%= image_tag @article.image, class: "w-full h-full object-cover" %>
+    </div>
+  <% end %>
+
   <!-- Main Article Body Container Wrapper -->
   <article class="bg-white shadow rounded-lg border border-gray-200 p-6 mb-8">
     
-    <!-- FIXED: Added flexible header layout block grouping Title and Action links on a single line -->
+    <!-- flexible header layout block grouping Title and Action links on a single line -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 pb-4 border-b border-gray-100 gap-4">
       <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight"><%= @article.title %></h1>
       
@@ -16,7 +23,6 @@
       <div class="flex items-center space-x-3 text-sm font-semibold shrink-0">
         <%= link_to "Edit Article", edit_article_path(@article), class: "text-blue-600 hover:text-blue-800 transition-colors" %>
         <span class="text-gray-300">|</span>
-        <%# FIXED: Added a native browser onclick confirmation dialog that works instantly without Turbo %>
         <%= button_to "Delete Article", article_path(@article), method: :delete, form: { onclick: "return confirm('Are you absolutely sure you want to delete this article and all of its comments permanently?');" }, class: "text-red-500 hover:text-red-700 hover:underline cursor-pointer" %>
       </div>
     </div>
@@ -29,6 +35,24 @@
 
   <hr class="border-t border-gray-200 my-8">
 
+  <!-- FIXED: Flash alert validation banners render directly above the interaction zone -->
+  <% if flash[:alert] %>
+    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg mb-6 shadow-sm">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm font-semibold text-red-800">
+            <%= flash[:alert] %>
+          </p>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
   <!-- Active Dynamic Comments Feed Section -->
   <h2 class="text-2xl font-bold text-gray-900 mb-4">Comments (<%= @article.comments.count %>)</h2>
   <div id="comments" class="space-y-4 mb-8">
@@ -39,7 +63,9 @@
             <div class="flex justify-between items-start mb-2">
               <p class="text-sm font-semibold text-gray-900">
                 <span class="inline-block w-2 h-2 rounded-full bg-blue-500 mr-1.5"></span>
-                <%= comment.commenter %> <span class="text-xs font-normal text-gray-400 ml-2">shared thoughts</span>
+                <%# FIXED: Correctly outputting commenter name field falling back safely %>
+                <%= comment.commenter.presence || "Anonymous" %> 
+                <span class="text-xs font-normal text-gray-400 ml-2">shared thoughts</span>
               </p>
               
               <!-- Clean Red Borderless Fallback Delete Link Button -->
@@ -57,6 +83,8 @@
   <!-- Interactive Input Form Sheet Container -->
   <div class="bg-gray-50 rounded-lg border border-gray-200 p-6">
     <h3 class="text-lg font-bold text-gray-900 mb-4">Leave a Comment</h3>
+    
+    <%# FIXED: Switched model binding instantiation block syntax format to keep parameters aligned %>
     <%= form_with model: [ @article, @article.comments.build ], class: "space-y-4" do |form| %>
       <div>
         <%= form.label :commenter, "Your Name", class: "block text-sm font-medium text-gray-700 mb-1" %>

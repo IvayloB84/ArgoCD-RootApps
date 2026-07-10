@@ -1,7 +1,7 @@
 FROM ruby:3.2-alpine
 
 # 1. FIXED: Added libc6-compat to allow the standalone tailwind binary to execute on Alpine Linux
-RUN apk add --no-cache build-base sqlite-dev tzdata nodejs gcompat libc6-compat
+RUN apk add --no-cache build-base sqlite-dev tzdata nodejs gcompat libc6-compat vips-dev imagemagick
 
 # 2. Configure project directory workspace
 WORKDIR /app

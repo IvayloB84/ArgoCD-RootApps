@@ -42,7 +42,10 @@
         <%= form.label :body, "Article Body Content", class: "block text-sm font-semibold text-gray-700 mb-1" %>
         <%= form.text_area :body, rows: 8, placeholder: "Type your main markdown text blocks or system architecture notes here...", class: "block w-full rounded-md border border-gray-300 shadow-sm p-2.5 bg-white text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm placeholder-gray-400" %>
       </div>
-
+        <div class="mb-6">
+        <%= form.label :image, "Header Cover Photo", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <%= form.file_field :image, class: "block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border border-gray-300 rounded-lg p-2 bg-white" %>
+      </div>
       <!-- Submit Action Button Trigger -->
       <div class="pt-2">
         <%= form.submit "Publish Article", class: "w-full sm:w-auto inline-flex justify-center items-center px-5 py-2.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors cursor-pointer" %>

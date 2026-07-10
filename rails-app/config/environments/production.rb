@@ -79,4 +79,6 @@ Rails.application.configure do
 
   config.assets.gzip = false
 
+  config.active_storage.service = :production
+
 end

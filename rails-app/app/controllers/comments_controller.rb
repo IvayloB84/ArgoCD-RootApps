@@ -1,26 +1,26 @@
-# app/controllers/comments_controller.rb
 class CommentsController < ApplicationController
-  # Captures a comment and binds it directly to the parent article record ID
   def create
     @article = Article.find(params[:article_id])
-    @comment = @article.comments.create(comment_params)
-    
-    # Redirects the browser straight back to the article page to show the comment
-    redirect_to article_path(@article)
+    @comment = @article.comments.build(comment_params)
+
+    if @comment.save
+      redirect_to article_path(@article), notice: "Comment posted successfully!"
+    else
+      redirect_to article_path(@article), alert: "Could not save comment: #{@comment.errors.full_messages.join(', ')}"
+    end
   end
 
+  # FIXED: Added the missing destroy action to locate and delete the comment safely
   def destroy
     @article = Article.find(params[:article_id])
     @comment = @article.comments.find(params[:id])
     @comment.destroy
 
-    redirect_to article_path(@article), status: :see_other
+    redirect_to article_path(@article), notice: "Comment was deleted successfully!", status: :see_other
   end
-    
-  private
 
-  # Strong parameters security block protecting comment data entries
-  def comment_params
-    params.expect(comment: [ :commenter, :body ])
-  end
+  private
+    def comment_params
+      params.require(:comment).permit(:body, :commenter)
+    end
 end

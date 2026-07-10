@@ -27,7 +27,11 @@ class ArticlesController < ApplicationController
 
   def update
     @article = Article.find(params[:id])
-    if @article.update(article_params)
+    if article_params[:purge_image] == "1"
+      @article.image.purge
+    end
+
+    if @article.update(article_params.to_h.except(:purge_image))
       redirect_to article_path(@article)
     else
       render :edit, status: :unprocessable_entity
@@ -42,8 +46,8 @@ class ArticlesController < ApplicationController
   end
 
   private
-
-  def article_params
-    params.expect(article: [ :title, :body ])
-  end
+    def article_params
+      # FIXED: Whitelisted :purge_image token flag into your strong parameters structure
+      params.expect(article: [ :title, :body, :image, :purge_image ])
+    end
 end

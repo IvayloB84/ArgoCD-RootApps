@@ -1,5 +1,5 @@
 # app/models/comment.rb
 class Comment < ApplicationRecord
-  # VERIFY: This links every comment back to its parent article
   belongs_to :article
+  validates :body, presence: true, length: { minimum: 10 }
 end
