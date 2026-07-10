@@ -16,16 +16,27 @@ spec:
             enabled: true
             storageClassName: "local-path"
             size: 2Gi
-        prometheus:
-          prometheusSpec:
-            retention: 1d
-            # ROOTLESS ALIGNMENT: Applies root parameters to the core database container
+        alertmanager:
+          alertmanagerSpec:
+            # K3S ROOTLESS ALIGNMENT FOR ALERTMANAGER
             securityContext:
               runAsUser: 0
               runAsGroup: 0
               runAsNonRoot: false
               fsGroup: 0
-            # FIXED CHART SYNTAX: Force-applies root privileges to the config reloader container
+            alertmanagerConfigReloader:
+              securityContext:
+                runAsUser: 0
+                runAsGroup: 0
+                runAsNonRoot: false
+        prometheus:
+          prometheusSpec:
+            retention: 1d
+            securityContext:
+              runAsUser: 0
+              runAsGroup: 0
+              runAsNonRoot: false
+              fsGroup: 0
             prometheusConfigReloader:
               securityContext:
                 runAsUser: 0
