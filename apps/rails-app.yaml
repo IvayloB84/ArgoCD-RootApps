@@ -5,7 +5,7 @@ metadata:
   namespace: default
 spec:
   revisionHistoryLimit: 2
-  replicas: 1 # Set to 1 for SQLite so two pods don't lock the same database file
+  replicas: 1
   strategy:
     type: Recreate
   selector:
@@ -25,7 +25,6 @@ spec:
         volumeMounts:
         - name: sqlite-storage
           mountPath: /app/storage
-
       containers:
       - name: rails-container
         image: docker.io/ivaylob84/rails-gallery:latest
@@ -51,7 +50,6 @@ spec:
             secretKeyRef:
               name: rails-production-secrets
               key: SECRET_KEY_BASE
-        # Mounts the persistent disk block directly inside the container
         volumeMounts:
         - name: sqlite-storage
           mountPath: /app/storage
@@ -93,6 +91,13 @@ spec:
             port:
               number: 80
       - path: /assets
+        pathType: Prefix
+        backend:
+          service:
+            name: rails-app-service
+            port:
+              number: 80
+      - path: /rails/active_storage
         pathType: Prefix
         backend:
           service:
