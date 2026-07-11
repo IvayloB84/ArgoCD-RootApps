@@ -18,6 +18,7 @@ Rails.application.routes.draw do
 
     resources :articles do
       resources :comments
+  resources :ratings, only: [:create, :destroy] 
     end
   end
 
