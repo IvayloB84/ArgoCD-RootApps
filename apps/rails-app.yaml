@@ -85,7 +85,7 @@ spec:
   rules:
   - http:
       paths:
-      - path: /rails
+      - path: /
         pathType: Prefix
         backend:
           service:
