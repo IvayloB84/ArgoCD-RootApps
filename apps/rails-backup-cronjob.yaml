@@ -33,16 +33,10 @@ spec:
               fi
               
               TAR_NAME="${PREFIX}_archive_${TIMESTAMP}.tar.gz"
-              TEMP_DIR="/tmp/backup_${TIMESTAMP}"
               
-              mkdir -p ${TEMP_DIR}/media
-              cp /app/storage/production.sqlite3 ${TEMP_DIR}/production.sqlite3
-              
-              find /app/storage/ -maxdepth 1 -type d -name "??" -exec cp -r {} ${TEMP_DIR}/media/ \;
-              
-              tar -czf /app/storage/${TAR_NAME} -C ${TEMP_DIR} .
-              rm -rf ${TEMP_DIR}
-              echo "Backup compiled successfully: ${TAR_NAME}"
+              # FIXED: Direct complete compression while cleanly avoiding loop recursion errors
+              tar --exclude="*.tar.gz" --exclude="*.sqlite3-*" -czf /app/storage/${TAR_NAME} -C /app/storage .
+              echo "Complete backup compiled successfully: ${TAR_NAME}"
               
               find /app/storage/ -name "daily_archive_*" -mtime +7 -delete
               find /app/storage/ -name "weekly_archive_*" -mtime +30 -delete
