@@ -4,7 +4,6 @@ metadata:
   name: rails-sqlite-backup
   namespace: default
 spec:
-  # Scheduled to run automatically every single midnight
   schedule: "0 0 * * *"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
@@ -20,7 +19,6 @@ spec:
           containers:
           - name: sqlite-backup-worker
             image: alpine:latest
-            # Safe-copies the live production file with an explicit calendar date timestamp suffix
             command:
             - /bin/sh
             - -c
@@ -29,22 +27,37 @@ spec:
               DAY_OF_WEEK=$(date +%u) # 6 is Saturday
               
               if [ "$DAY_OF_WEEK" -eq 6 ]; then
-                #  WEEKLY BACKUP: Saved with a special name prefix
-                FILENAME="weekly_production_${TIMESTAMP}.sqlite3"
+                PREFIX="weekly"
               else
-                #  DAILY BACKUP: Saved with standard naming
-                FILENAME="daily_production_${TIMESTAMP}.sqlite3"
+                PREFIX="daily"
               fi
               
-              cp /app/storage/production.sqlite3 /app/storage/${FILENAME}
-              echo " SQLite database backup created: ${FILENAME}"
+              TAR_NAME="${PREFIX}_archive_${TIMESTAMP}.tar.gz"
+              TEMP_DIR="/tmp/backup_${TIMESTAMP}"
               
-              # SMART ROTATION: Delete daily backups older than 7 days
-              find /app/storage/ -name "daily_production_*" -mtime +7 -delete
+              # STEP 1: Create a temporary isolated workspace layout directory
+              mkdir -p ${TEMP_DIR}/media
               
-              # LONG-TERM RETENTION: Delete weekly backups older than 30 days (Preserves last Saturday!)
-              find /app/storage/ -name "weekly_production_*" -mtime +30 -delete
-              echo "Storage optimization complete."
+              # STEP 2: Copy the live database file safely
+              cp /app/storage/production.sqlite3 ${TEMP_DIR}/production.sqlite3
+              
+              # STEP 3: Copy all active two-character Active Storage binary image directory hashes
+              # Excludes existing backup tarballs or temporary files from bloating the copy
+              find /app/storage/ -maxdepth 1 -type d -name "[0-9a-z][0-9a-z]" -exec cp -r {} ${TEMP_DIR}/media/ \;
+              
+              # STEP 4: Compress both data layers into a single high-utility archive file package
+              tar -czf /app/storage/${TAR_NAME} -C ${TEMP_DIR} .
+              
+              # STEP 5: Clean up temporary workspace memory strings
+              rm -rf ${TEMP_DIR}
+              echo " Complete backup compiled successfully: ${TAR_NAME}"
+              
+              # SMART ROTATION: Delete daily archives older than 7 days
+              find /app/storage/ -name "daily_archive_*" -mtime +7 -delete
+              
+              # LONG-TERM RETENTION: Delete weekly archives older than 30 days (Preserves your Saturdays!)
+              find /app/storage/ -name "weekly_archive_*" -mtime +30 -delete
+              echo " Volume disk storage space optimized cleanly."
             volumeMounts:
             - name: sqlite-volume
               mountPath: /app/storage
