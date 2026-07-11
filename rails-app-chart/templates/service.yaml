@@ -9,5 +9,4 @@ spec:
     targetPort: 3000
     protocol: TCP
   selector:
-    # name: http
     app: rails-web
