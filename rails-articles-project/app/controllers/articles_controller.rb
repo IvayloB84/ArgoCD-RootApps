@@ -1,7 +1,11 @@
 class ArticlesController < ApplicationController
+  # 1. Tells Rails 8 which pages guests can view without logging in
   allow_unauthenticated_access only: [ :index, :show ]
   
-  # FIXED: Intercepts modification requests to run authorship authorization checks
+  # 🎯 FIXED: Forces Rails 8 to load your logged-in session context on public pages
+  before_action :resume_session, only: [ :index, :show ]
+  
+  # 2. Intercepts modification requests to run authorship authorization checks
   before_action :ensure_author, only: [ :edit, :update, :destroy ]
 
   def index
@@ -17,7 +21,6 @@ class ArticlesController < ApplicationController
   end
 
   def create
-    # FIXED: Builds the new article directly nested under the logged-in user session context
     @article = Current.user.articles.build(article_params)
     
     if @article.save
@@ -36,7 +39,7 @@ class ArticlesController < ApplicationController
       @article.image.purge
     end
 
-    if @article.update(article_params.to_h.except(:purge_image))
+    if @article.update(article_params.except(:purge_image))
       redirect_to article_path(@article), notice: "Article updated successfully!"
     else
       render :edit, status: :unprocessable_entity
@@ -56,10 +59,12 @@ class ArticlesController < ApplicationController
     # FIXED: True Authorization checkpoint method filter block
     def ensure_author
       @article = Article.find(params[:id])
-      return if Current.user.admin?
       
-      # If the article's user ID doesn't match the current logged-in user, block them immediately!
-      if @article.user_id != Current.user.id
+      # 👑 Absolute Admin Bypass: Check if the logged-in user object exists and is an admin
+      return if Current.user&.admin?
+      
+      # If not an admin, restrict modification access strictly to the true author
+      if Current.user.nil? || @article.user_id != Current.user.id
         redirect_to articles_path, alert: "Access Denied: You are not authorized to modify this article."
       end
     end
