@@ -57,6 +57,48 @@
     </div>
   <% end %>
 
+  <!-- 🌟 SECURE & COMPACT RATINGS BADGE (AUTHENTICATED ONLY WITH RETRACTION) -->
+  <div class="inline-flex items-center bg-amber-50 border border-amber-200 rounded-full px-3 py-1 text-sm text-gray-700 mb-6 shadow-sm">
+    <span class="text-amber-400 font-bold mr-1.5">
+      <% average = @article.ratings.average(:score).to_f.round(1) %>
+      <% if average > 0 %>
+        <% average.to_i.times do %>★<% end %><% (5 - average.to_i).times do %>☆<% end %>
+      <% else %>
+        ☆☆☆☆☆
+      <% end %>
+    </span>
+
+    <span class="font-bold text-xs text-gray-800 mr-2">
+      <%= average > 0 ? average : "0.0" %> (<%= @article.ratings.count %>)
+    </span>
+
+    <% if authenticated? %>
+      <% existing_rating = @article.ratings.find_by(user_id: Current.user.id) %>
+      
+      <% if existing_rating %>
+        <!-- User Has Already Rated: Display inline retraction button -->
+        <div class="flex items-center gap-1.5 border-l border-amber-200 pl-2 ml-1 text-xs">
+          <span class="text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full font-bold">✓ My Rating: <%= existing_rating.score %>★</span>
+          <%= button_to "Remove", article_rating_path(@article, existing_rating), method: :delete, class: "text-red-500 hover:text-red-700 font-bold transition hover:underline cursor-pointer bg-transparent border-0 p-0 text-xs ml-1" %>
+        </div>
+      <% else %>
+        <!-- User is Logged In but Has Not Rated: Show the submission star picker form -->
+        <%= form_with model: [@article, @article.ratings.build], class: "flex items-center gap-1 border-l border-amber-200 pl-2 ml-1" do |form| %>
+          <div class="flex flex-row-reverse items-center gap-0.5">
+        <% 5.downto(1) do |num| %>
+          <%= form.radio_button :score, num, id: "star_#{num}", class: "hidden peer", checked: num == 5 %>
+          <label for="star_<%= num %>" class="text-base text-gray-300 peer-hover:text-amber-400 peer-checked:text-amber-400 hover:text-amber-400 cursor-pointer transition-colors px-0.5">★</label>
+        <% end %>
+          </div>
+          <%= form.submit "Rate", class: "bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-[10px] uppercase tracking-wider py-0.5 px-1.5 rounded transition shadow-xs cursor-pointer ml-1" %>
+        <% end %>
+      <% end %>
+    <% else %>
+      <!-- Unauthenticated guest fallback tip -->
+      <span class="text-[10px] text-gray-400 font-medium border-l border-amber-200 pl-2 ml-1 italic">Sign in to rate this post</span>
+    <% end %>
+  </div>
+
   <!-- Active Dynamic Comments Feed Section -->
   <h2 class="text-2xl font-bold text-gray-900 mb-4">Comments (<%= @article.comments.count %>)</h2>
   <div id="comments" class="space-y-4 mb-8">
@@ -115,5 +157,4 @@
       </div>
     <% end %>
   </div>
-
 </div>
