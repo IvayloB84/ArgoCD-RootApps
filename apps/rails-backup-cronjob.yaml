@@ -23,6 +23,9 @@ spec:
             - /bin/sh
             - -c
             - |
+              # Install sqlite3 package inside the worker container dynamically
+              apk add --no-cache sqlite
+              
               TIMESTAMP=$(date +%Y%m%d_%H%M%S)
               DAY_OF_WEEK=$(date +%u)
               
@@ -33,9 +36,18 @@ spec:
               fi
               
               TAR_NAME="${PREFIX}_archive_${TIMESTAMP}.tar.gz"
+              TEMP_DIR="/tmp/backup_${TIMESTAMP}"
+              mkdir -p ${TEMP_DIR}/media
               
-              # FIXED: Direct complete compression while cleanly avoiding loop recursion errors
-              tar --exclude="*.tar.gz" --exclude="*.sqlite3-*" -czf /app/storage/${TAR_NAME} -C /app/storage .
+              # FIXED: Forces SQLite to flush its memory logs directly onto disk before copying
+              sqlite3 /app/storage/production.sqlite3 "PRAGMA wal_checkpoint(TRUNCATE);"
+              cp /app/storage/production.sqlite3 ${TEMP_DIR}/production.sqlite3
+              
+              # Copies all active multi-layer two-character directory keys safely
+              cp -a /app/storage/[0-9a-z][0-9a-z] ${TEMP_DIR}/media/ 2>/dev/null || true
+              
+              tar -czf /app/storage/${TAR_NAME} -C ${TEMP_DIR} .
+              rm -rf ${TEMP_DIR}
               echo "Complete backup compiled successfully: ${TAR_NAME}"
               
               find /app/storage/ -name "daily_archive_*" -mtime +7 -delete
