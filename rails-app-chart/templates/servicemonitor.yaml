@@ -1,12 +1,9 @@
 apiVersion: ://coreos.com
 kind: ServiceMonitor
 metadata:
-  name: {{ include "rails-app-chart.fullname" . }}-monitor
-  namespace: default                     # Lives where your Rails application runs
+  name: rails-app-servicemonitor
   labels:
-    # CRITICAL: This label tells the Prometheus Operator to auto-discover this scraper
-    release: cluster-monitoring-app      
-    {{- include "rails-app-chart.labels" . | nindent 4 }}
+    release: cluster-monitoring-app
 spec:
   selector:
     matchLabels:
