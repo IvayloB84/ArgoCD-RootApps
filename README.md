@@ -1,10 +1,10 @@
-# 🚀 Rootless Kubernetes (k3d/k3s) GitOps Architecture Blueprint
+# Rootless Kubernetes (k3d/k3s) GitOps Architecture Blueprint
 
 This repository contains declarative manifests, parameterized Helm charts, and automation guidelines to provision a high-availability, fully anonymized Kubernetes development cluster inside an unprivileged user namespace. All cluster components, container runtimes, and image caches bypass the host's primary operating system partition to write natively into isolated, virtual storage layers.
 
 ---
 
-## 🏗️ The Multi-Layer Architecture Layout
+## The Multi-Layer Architecture Layout
 
 ```text
 +---------------------------------------------------------------------------------+
@@ -14,35 +14,38 @@ This repository contains declarative manifests, parameterized Helm charts, and a
 |         └── Daemon Layer: Rootless Docker Engine Namespace Execution Wrapper    |
 |               └── Orchestration: Declarative K3d Cluster (`my-rootless-cluster`)|
 |                     ├── Ingress Core: Native Traefik (Host Proxy Port 8080)     |
-|                     └── GitOps Engine: Argo CD Controller (Namespace: argocd)    |
+|                     └── GitOps Engine: Argo CD Controller (Namespace: argocd)   |
 +---------------------------------------------------------------------------------+
 ```
 
 ---
 
-## 📁 Repository Structural Map
+## Repository Structural Map
 
 ```text
 ArgoCD-RootApps/
 ├── .gitignore                # Safe-keeps environment scripts, local runtime cache, and passwords
 ├── .argocdignore             # Instructs Argo CD to completely ignore markdown/documentation edits
 ├── README.md                 # Master infrastructure manual (This file)
-├── k3d-config.yaml           # ⚙️ Declarative cluster lifecycle configuration schema blueprint
-├── start-cluster.sh          # 🔐 Private machine-specific start script (Git-ignored)
-├── argocd-admin-password.txt  # Extracted secure admin dashboard credentials (Git-ignored)
-├── argocd-apps/              # 🌐 The GitOps Child Application Registry
+├── k3d-config.yaml           # Declarative cluster lifecycle configuration schema blueprint
+├── start-cluster.sh          # Private machine-specific start script (Git-ignored)
+├── argocd-admin-password.txt # Extracted secure admin dashboard credentials (Git-ignored)
+├── argocd-apps/              # The GitOps Child Application Registry
 │   ├── rails-app.yaml        # Tracks values-driven Rails 8 Gallery application parameters
 │   └── web-app.yaml          # Tracks lightweight Nginx test application parameters
-├── apps/                     # 📁 Nginx Test Server Manifests (1Gi PVC Storage)
-├── bootstrap/                # 📁 Master Cluster Initialization Framework
+├── apps/                     # Complete Core Cluster Manifests (Backups, Secrets, Deployments)
+│   ├── rails-app.yaml        # High-Availability Rails deployment with rolling update strategy
+│   ├── rails-backup-cronjob.yaml # Automated GFS backup script with SQLite checkpoint flushing
+│   └── rails-sealed-secrets.yaml # Encrypted client-side application keys managed via kubeseal
+├── bootstrap/                # Master Cluster Initialization Framework
 │   └── root-application.yaml # Master parent "Root App" targeting the argocd-apps/ registry
-├── rails-app-chart/          # 📦 Parameterized Rails 8 Production Helm Chart Blueprint
-└── rails-articles-project/   # 🚀 Ruby on Rails 8 Application Core Source Code Workspace
+├── rails-app-chart/          # Parameterized Rails 8 Production Helm Chart Blueprint
+└── rails-articles-project/   # Ruby on Rails 8 Application Core Source Code Workspace
 ```
 
 ---
 
-## 🛠️ Step-by-Step Environment Provisioning Blueprint
+## Step-by-Step Environment Provisioning Blueprint
 
 If cloning this repository onto a fresh workstation, define your local machine paths using environment variables to keep your infrastructure definitions generic and shared.
 
@@ -78,7 +81,7 @@ systemctl --user restart docker.service
 ```
 
 ### Step 3: Configure Your Declarative Cluster Blueprints
-To keep the main configuration file completely generic and clean for public version control tracking, the repository leverages a declarative cluster manifest. Create your **`k3d-config.yaml`** file at the root of the project:
+To keep the main configuration file completely generic and clean for public version control tracking, the repository leverages a declarative cluster manifest. Create your `k3d-config.yaml` file at the root of the project:
 
 ```yaml
 apiVersion: k3d.io/v1alpha5
@@ -103,7 +106,7 @@ options:
 ```
 
 ### Step 4: Stand Up the Local Environment via the Automation Script
-To run this setup safely without exposing local partitions, create a local automation helper script named **`start-cluster.sh`** at your repository root. *Note: Ensure this file is added to your `.gitignore` to prevent leakage.*
+To run this setup safely without exposing local partitions, create a local automation helper script named `start-cluster.sh` at your repository root. Note: Ensure this file is added to your `.gitignore` to prevent leakage.
 
 ```bash
 #!/bin/bash
@@ -113,12 +116,12 @@ export STORAGE_DIR="/your/target/private/storage/directory"
 export REPO_DIR="${STORAGE_DIR}/your-project-root/ArgoCD-RootApps"
 
 if [ ! -d "$STORAGE_DIR" ] || [ ! -f "${REPO_DIR}/k3d-config.yaml" ]; then
-    echo "❌ Pre-flight checks failed. Verify folder structures and files."
+    echo "Pre-flight checks failed. Verify folder structures and files."
     exit 1
 fi
 
 if k3d cluster list my-rootless-cluster >/dev/null 2>&1; then
-    echo "⚠️ Cluster already exists. Skipping creation."
+    echo "Cluster already exists. Skipping creation."
 else
     k3d cluster create --config "${REPO_DIR}/k3d-config.yaml"
 fi
@@ -135,7 +138,13 @@ Stand up the Argo CD framework controller components natively using this string-
 kubectl create namespace argocd && kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 ```
 
-### Step 6: Bootstrap the App-of-Apps GitOps Pipeline Connection
+### Step 6: Deploy Secret Encryption Components
+Install the cluster-side Sealed Secrets controller framework to handle declarative one-way cryptographic key translation natively within your namespace:
+```bash
+kubectl apply -f https://github.com
+```
+
+### Step 7: Bootstrap the App-of-Apps GitOps Pipeline Connection
 Extract your administrative password file and register the master root bootstrap application file with the cluster to activate automated continuous monitoring, dashboard isolation, and fleet self-healing:
 ```bash
 # Extract the unique initial administrative password block safely to an ignored text file
@@ -147,7 +156,7 @@ kubectl apply -f bootstrap/root-application.yaml
 
 ---
 
-## 🔄 GitOps Operations Workflow
+## GitOps Operations Workflow
 
 Once the environment initialization steps are complete, manual `kubectl apply` commands are obsolete. Cluster infrastructure and application structures are managed entirely by declaring desired states within your Git workspace files:
 
