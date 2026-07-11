@@ -66,7 +66,7 @@ sudo chown -R $UID:$GID "$STORAGE_DIR/docker-files"
 ### Step 2: Install and Point Rootless Docker to the Loop Mount
 Install the rootless Docker utility framework and configure its core daemon configuration mapping file to write its runtime layers exclusively onto your newly mounted loop directory:
 ```bash
-curl -fsSL https://docker.com | sh
+curl -fsSL https://get.docker.com | sh
 mkdir -p ~/.config/docker
 ```
 Create `~/.config/docker/daemon.json` and configure the data storage pointer target:
@@ -141,7 +141,7 @@ kubectl create namespace argocd && kubectl apply -n argocd --server-side --force
 ### Step 6: Deploy Secret Encryption Components
 Install the cluster-side Sealed Secrets controller framework to handle declarative one-way cryptographic key translation natively within your namespace:
 ```bash
-kubectl apply -f https://github.com
+apply -f https://github.com/bitnami/sealed-secrets/releases/download/v0.38.4/controller.yaml
 ```
 
 ### Step 7: Bootstrap the App-of-Apps GitOps Pipeline Connection
