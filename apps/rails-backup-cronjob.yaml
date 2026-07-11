@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: rails-sqlite-backup
+  namespace: default
+spec:
+  # Scheduled to run automatically every single midnight
+  schedule: "0 0 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: sqlite-backup-worker
+            image: alpine:latest
+            # Safe-copies the live production file with an explicit calendar date timestamp suffix
+            command:
+            - /bin/sh
+            - -c
+            - |
+              TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+              cp /app/storage/production.sqlite3 /app/storage/backup_production_${TIMESTAMP}.sqlite3
+              echo "SQLite database backup completed successfully at ${TIMESTAMP}"
+            volumeMounts:
+            - name: sqlite-volume
+              mountPath: /app/storage
+          restartPolicy: OnFailure
+          volumes:
+          - name: sqlite-volume
+            persistentVolumeClaim:
+              claimName: rails-sqlite-pvc
