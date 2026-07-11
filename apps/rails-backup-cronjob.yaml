@@ -26,8 +26,25 @@ spec:
             - -c
             - |
               TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-              cp /app/storage/production.sqlite3 /app/storage/backup_production_${TIMESTAMP}.sqlite3
-              echo "SQLite database backup completed successfully at ${TIMESTAMP}"
+              DAY_OF_WEEK=$(date +%u) # 6 is Saturday
+              
+              if [ "$DAY_OF_WEEK" -eq 6 ]; then
+                #  WEEKLY BACKUP: Saved with a special name prefix
+                FILENAME="weekly_production_${TIMESTAMP}.sqlite3"
+              else
+                #  DAILY BACKUP: Saved with standard naming
+                FILENAME="daily_production_${TIMESTAMP}.sqlite3"
+              fi
+              
+              cp /app/storage/production.sqlite3 /app/storage/${FILENAME}
+              echo " SQLite database backup created: ${FILENAME}"
+              
+              # SMART ROTATION: Delete daily backups older than 7 days
+              find /app/storage/ -name "daily_production_*" -mtime +7 -delete
+              
+              # LONG-TERM RETENTION: Delete weekly backups older than 30 days (Preserves last Saturday!)
+              find /app/storage/ -name "weekly_production_*" -mtime +30 -delete
+              echo "Storage optimization complete."
             volumeMounts:
             - name: sqlite-volume
               mountPath: /app/storage
