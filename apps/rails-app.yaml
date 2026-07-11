@@ -5,9 +5,13 @@ metadata:
   namespace: default
 spec:
   revisionHistoryLimit: 2
-  replicas: 1
+  # HA CONFIGURATION: Always keep at least 2 active instances running across your nodes
+  replicas: 2 
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1       # Spawns 1 new pod before killing any old pods
+      maxUnavailable: 0 # Forces at least 2 pods to remain online under all conditions
   selector:
     matchLabels:
       app: rails-web
@@ -31,6 +35,13 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
+        # READINESS PROBE: Tells Traefik to wait until Puma is fully loaded before routing users to it
+        readinessProbe:
+          httpGet:
+            path: /rails/articles
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 5
         command: ["/bin/sh", "-c"]
         args:
           - |
@@ -56,6 +67,8 @@ spec:
       volumes:
       - name: sqlite-storage
         persistentVolumeClaim:
+          # CRITICAL NOTE: This PVC storage class must be updated to a ReadWriteMany provider (like NFS) 
+          # so multiple pods can read/write to your sqlite database file at the same time.
           claimName: rails-sqlite-pvc
 ---
 apiVersion: v1
