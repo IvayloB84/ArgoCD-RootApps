@@ -1,0 +1,19 @@
+apiVersion: ://coreos.com
+kind: ServiceMonitor
+metadata:
+  name: {{ include "rails-app-chart.fullname" . }}-monitor
+  namespace: default                     # Lives where your Rails application runs
+  labels:
+    # CRITICAL: This label tells the Prometheus Operator to auto-discover this scraper
+    release: cluster-monitoring-app      
+    {{- include "rails-app-chart.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      # Targets the exact labels matching your live Rails Service
+      {{- include "rails-app-chart.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: http                         # Matches the named port inside your service.yaml
+      path: /metrics                     # The path where your Rails metrics are exposed
+      interval: 15s                      # How often Prometheus pulls metrics
+      scrapeTimeout: 10s

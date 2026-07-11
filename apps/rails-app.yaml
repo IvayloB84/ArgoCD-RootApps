@@ -16,6 +16,16 @@ spec:
       labels:
         app: rails-web
     spec:
+      initContainers:
+      - name: volume-permissions-fix
+        image: alpine:latest
+        command: ["sh", "-c", "chown -R 1000:1000 /app/storage && chmod -R 775 /app/storage"]
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - name: sqlite-storage
+          mountPath: /app/storage
+
       containers:
       - name: rails-container
         image: docker.io/ivaylob84/rails-gallery:latest
