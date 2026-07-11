@@ -43,7 +43,7 @@ spec:
               
               # STEP 3: Copy all active two-character Active Storage binary image directory hashes
               # Excludes existing backup tarballs or temporary files from bloating the copy
-              find /app/storage/ -maxdepth 1 -type d -name "[0-9a-z][0-9a-z]" -exec cp -r {} ${TEMP_DIR}/media/ \;
+              find /app/storage/ -maxdepth 1 -type d -iname "[0-9a-z][0-9a-z]" -exec cp -r {} ${TEMP_DIR}/media/ \;
               
               # STEP 4: Compress both data layers into a single high-utility archive file package
               tar -czf /app/storage/${TAR_NAME} -C ${TEMP_DIR} .
