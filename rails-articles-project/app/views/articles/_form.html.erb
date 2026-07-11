@@ -1,5 +1,18 @@
 <%= form_with model: article, html: { multipart: true, class: "space-y-6" } do |form| %>
 
+<% if article.errors.any? %>
+  <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg mb-6 shadow-sm">
+    <h2 class="text-sm font-bold text-red-800 mb-1">
+     <%= pluralize(article.errors.count, "error") %> blocked this article from being saved:
+    </h2>
+    <ul class="list-disc list-inside text-xs text-red-700 space-y-0.5">
+      <% article.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
   <% if article.user_id == Current.user&.id || Current.user&.admin? %>
     <!-- Title Input -->
     <div class="mb-6">
