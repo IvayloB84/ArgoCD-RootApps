@@ -1,3 +1,4 @@
+theone@debian:/media/theone/HDD/docker-files/github_projects/ArgoCD-RootApps$ cat apps/rails-app.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -117,3 +118,4 @@ spec:
             name: rails-app-service
             port:
               number: 80
+
