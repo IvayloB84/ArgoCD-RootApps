@@ -54,10 +54,10 @@ spec:
     server: 'https://kubernetes.default.svc'
     namespace: argocd
   syncPolicy:
-    - Validate=false
-    - SkipDryRunOnMissingResources=true
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - ServerSideApply=true
+      - Validate=false
+      - SkipDryRunOnMissingResource=true
