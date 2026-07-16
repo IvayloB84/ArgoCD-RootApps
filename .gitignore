@@ -31,3 +31,6 @@ rails-articles-project/db/*.sqlite3
 rails-articles-project/db/*.sqlite3-journal
 rails-articles-project/db/*.sqlite3-wal
 rails-articles-project/.byebug_history
+
+# Ignore local backup files *.bak
+*.bak*
