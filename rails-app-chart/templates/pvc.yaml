@@ -3,8 +3,6 @@ kind: PersistentVolumeClaim
 metadata:
   name: rails-sqlite-pvc
   namespace: default
-  annotations:
-    argocd.argoproj.io/sync-options: Replace=true
 spec:
   accessModes:
     - ReadWriteOnce
