@@ -9,7 +9,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/IvayloB84/my-scaffolded-node-app.git
-    targetRevision: main
+    targetRevision: feature/add-k8s-manifests
     path: k8s
   destination:
     server: https://kubernetes.default.svc
