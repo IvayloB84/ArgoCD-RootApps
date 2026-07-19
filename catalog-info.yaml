@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "my-scaffolded-node-app"
+  description: Automated GitOps Node.js microservice
+  annotations:
+    # 🐙 Triggers the ArgoCD Tab: Matches the app name inside your ArgoCD cluster
+    argocd/app-selector: 'backstage.io/kubernetes-id=my-scaffolded-node-app'
+    
+    # ☸️ Triggers the Kubernetes Tab: Matches the pod labels in your k3s cluster
+    backstage.io/kubernetes-id: "my-scaffolded-node-app"
+spec:
+  type: service
+  lifecycle: experimental
+  owner: user:guest
