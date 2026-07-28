@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: apex-victory-sync-700
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/IvayloB84/apex-victory-sync-700.git
+    targetRevision: HEAD
+    path: ./
+  destination:
+    # 🎯 PROPERLY FIXED: Verified internal cluster endpoint address
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
