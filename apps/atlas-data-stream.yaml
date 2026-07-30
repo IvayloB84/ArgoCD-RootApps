@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/IvayloB84/atlas-data-stream/tree/main/k8s'
+    repoURL: 'https://github.com/IvayloB84/atlas-data-stream'
     targetRevision: HEAD
     path: k8s
   destination:
