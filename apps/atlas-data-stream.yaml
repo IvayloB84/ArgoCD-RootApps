@@ -8,13 +8,14 @@ spec:
   source:
     repoURL: 'https://github.com/IvayloB84/atlas-data-stream'
     targetRevision: HEAD
-    path: .
+    path: k8s
     directory:
       exclude: 'catalog-info.yaml'
   destination:
-    server: https://default.svc
+    server: https://kubernetes.default.svc
     namespace: default
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+      allowEmpty: true
