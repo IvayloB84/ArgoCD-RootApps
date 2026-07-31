@@ -8,7 +8,7 @@ spec:
     # 🔍 AUTHENTICATED CRAWLER: Uses your token secret to scan your profile for new repos
     - gitSCMProvider:
         github:
-          organization: "IvayloB84"
+          user: "IvayloB84"
           tokenRef:
             secretName: github-token-secret
             key: token
