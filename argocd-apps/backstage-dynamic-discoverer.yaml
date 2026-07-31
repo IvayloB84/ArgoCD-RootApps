@@ -5,21 +5,21 @@ metadata:
   namespace: argocd
 spec:
   generators:
-    - scmProvider:
-        github:
-          user: "IvayloB84"
-          tokenRef:
-            secretName: github-token-secret
-            key: token
+    # 🔍 WATCHES A FILE: ArgoCD watches a single roster file for changes
+    - git:
+        repoURL: 'https://github.com/IvayloB84/ArgoCD-RootApps'
+        revision: main
+        files:
+          - path: "argocd-apps/apps-roster.json"
   template:
     metadata:
-      name: '{{ repository }}'
+      name: '{{name}}'
     spec:
       project: default
       source:
-        repoURL: '{{ html_url }}'
+        repoURL: 'https://github.com/IvayloB84/{{name}}.git'
         targetRevision: main
-        path: k8s
+        path: k8s # Looks for the /k8s folder inside the new repo
       destination:
         server: https://kubernetes.default.svc
         namespace: default
