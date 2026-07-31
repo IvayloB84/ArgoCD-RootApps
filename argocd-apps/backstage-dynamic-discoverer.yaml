@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: backstage-scaffolded-discoverer
+  namespace: argocd
+spec:
+  generators:
+    - gitSCMProvider:
+        github:
+          organization: "IvayloB84"
+        filters:
+          - repositoryMatch: .*
+          - topicMatch: kubernetes-enabled
+  template:
+    metadata:
+      name: '{{ repository }}'
+    spec:
+      project: default
+      source:
+        repoURL: '{{ html_url }}'
+        targetRevision: main
+        path: k8s # Dynamically checks the /k8s directory of the tagged repo
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: default
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
