@@ -5,21 +5,27 @@ metadata:
   namespace: argocd
 spec:
   generators:
+    # 🔍 AUTHENTICATED CRAWLER: Uses your token secret to scan your profile for new repos
     - gitSCMProvider:
         github:
           organization: "IvayloB84"
+          tokenRef:
+            secretName: github-token-secret
+            key: token
         filters:
           - repositoryMatch: .*
-          - topicMatch: kubernetes-enabled
+          # 🎯 TOPIC FILTER: Only deploys repositories carrying this specific tag
+          - topicMatch: kubernetes-enabled 
   template:
     metadata:
+      # Dynamically names the target application block using the GitHub repo name
       name: '{{ repository }}'
     spec:
       project: default
       source:
         repoURL: '{{ html_url }}'
         targetRevision: main
-        path: k8s # Dynamically checks the /k8s directory of the tagged repo
+        path: k8s
       destination:
         server: https://kubernetes.default.svc
         namespace: default
