@@ -19,7 +19,7 @@ spec:
       source:
         repoURL: 'https://github.com/IvayloB84/{{name}}.git'
         targetRevision: main
-        path: k8s # Looks for the /k8s folder inside the new repo
+        path: k8s
       destination:
         server: https://kubernetes.default.svc
         namespace: default
