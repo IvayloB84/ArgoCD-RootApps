@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "gitops-catalog-aligned-v1"
+  description: "Automated microservice deployment tracking pipeline."
+  annotations:
+    github.com/project-slug: "IvayloB84/gitops-catalog-aligned-v1"
+    argocd/app-name: "gitops-catalog-aligned-v1"
+    backstage.io/kubernetes-label-selector: "app=gitops-catalog-aligned-v1"
+    
+spec:
+  type: service
+  lifecycle: experimental
+  owner: "user:default/IvayloB84"
