@@ -12,11 +12,11 @@ spec:
           - path: "argocd-apps/*"
   template:
     metadata:
-      name: '{{path.basename}}'
+      name: '{{path.basenameNoExt}}'
     spec:
       project: default
       source:
-        repoURL: 'https://github.com/IvayloB84/{{path.basename}}.git'
+        repoURL: 'https://github.com/IvayloB84/{{path.basenameNoExt}}.git'
         targetRevision: main
         path: k8s
       destination:
