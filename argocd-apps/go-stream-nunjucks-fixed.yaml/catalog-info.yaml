@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: go-stream-nunjucks-fixed
+  annotations:
+    argocd/app-name: 'go-stream-nunjucks-fixed'
+    backstage.io/kubernetes-label-selector: 'app=go-stream-nunjucks-fixed'
+spec:
+  type: service
+  lifecycle: experimental
+  owner: 'user:default/IvayloB84'
