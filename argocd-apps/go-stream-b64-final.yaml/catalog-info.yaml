@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: go-stream-b64-final
+  annotations:
+    argocd/app-name: 'go-stream-b64-final'
+    backstage.io/kubernetes-label-selector: 'app=go-stream-b64-final'
+spec:
+  type: service
+  lifecycle: experimental
+  owner: 'user:default/IvayloB84'
