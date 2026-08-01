@@ -1,8 +1,0 @@
-apiVersion: argoproj.io/v1alpha1
-kind: AppSourceAllowList
-# This explicitly allows standard cluster primitives
-allow:
-  - group: apps
-    kind: Deployment
-  - group: ""
-    kind: Service
