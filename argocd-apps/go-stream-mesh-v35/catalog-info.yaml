@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: '{{ values.repoName }}'
+  annotations:
+    argocd/app-name: '{{ values.repoName }}'
+    backstage.io/kubernetes-label-selector: 'app={{ values.repoName }}'
+spec:
+  type: service
+  lifecycle: experimental
+  owner: user:default
