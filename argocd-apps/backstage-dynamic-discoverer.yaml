@@ -5,19 +5,18 @@ metadata:
   namespace: argocd
 spec:
   generators:
-    # 🔍 WATCHES A FILE: ArgoCD watches a single roster file for changes
     - git:
         repoURL: 'https://github.com/IvayloB84/ArgoCD-RootApps'
         revision: main
         files:
-          - path: "argocd-apps/apps-roster.json"
+          - path: "argocd-apps/*"
   template:
     metadata:
-      name: '{{name}}'
+      name: '{{path.basename}}'
     spec:
       project: default
       source:
-        repoURL: 'https://github.com/IvayloB84/{{name}}.git'
+        repoURL: 'https://github.com/IvayloB84/{{path.basename}}.git'
         targetRevision: main
         path: k8s
       destination:
