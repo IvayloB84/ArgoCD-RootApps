@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "gitops-dynamic-pulse-z5"
+  description: "Freshly generated application."
+  annotations:
+    github.com/project-slug: "IvayloB84/gitops-dynamic-pulse-z5"
+    argocd/app-name: "gitops-dynamic-pulse-z5"
+    backstage.io/kubernetes-label-selector: "app=gitops-dynamic-pulse-z5"
+spec:
+  type: service
+  lifecycle: experimental
+  owner: "user:default/IvayloB84"
