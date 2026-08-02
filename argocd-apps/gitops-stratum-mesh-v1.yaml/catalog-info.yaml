@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "gitops-stratum-mesh-v1"
+  description: "Freshly generated application."
+  annotations:
+    github.com/project-slug: "IvayloB84/gitops-stratum-mesh-v1"
+    argocd/app-name: "gitops-stratum-mesh-v1"
+    backstage.io/kubernetes-label-selector: "app=gitops-stratum-mesh-v1"
+spec:
+  type: service
+  lifecycle: experimental
+  owner: "user:default/IvayloB84"
