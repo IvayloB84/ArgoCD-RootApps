@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "zenith-mesh-router"
+  description: "Freshly generated application."
+  annotations:
+    github.com/project-slug: "IvayloB84/zenith-mesh-router"
+    argocd/app-name: "zenith-mesh-router"
+    backstage.io/kubernetes-label-selector: "app=zenith-mesh-router"
+spec:
+  type: service
+  lifecycle: experimental
+  owner: "user:default/IvayloB84"
