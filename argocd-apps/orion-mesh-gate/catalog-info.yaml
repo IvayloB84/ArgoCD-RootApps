@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "orion-mesh-gate"
+  description: "Freshly generated application."
+  annotations:
+    github.com/project-slug: "IvayloB84/orion-mesh-gate"
+    argocd/app-name: "orion-mesh-gate"
+    backstage.io/kubernetes-label-selector: "app=orion-mesh-gate"
+spec:
+  type: service
+  lifecycle: experimental
+  owner: "user:default/IvayloB84"
