@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "gitops-rewired-pipeline-v5"
+  description: "Freshly generated application."
+  annotations:
+    github.com/project-slug: "IvayloB84/gitops-rewired-pipeline-v5"
+    argocd/app-name: "gitops-rewired-pipeline-v5"
+    backstage.io/kubernetes-label-selector: "app=gitops-rewired-pipeline-v5"
+spec:
+  type: service
+  lifecycle: experimental
+  owner: "user:default"
