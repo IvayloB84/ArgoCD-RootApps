@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "gitops-set-engine-v1"
+  description: "Freshly generated application."
+  annotations:
+    github.com/project-slug: "IvayloB84/gitops-set-engine-v1"
+    argocd/app-name: "gitops-set-engine-v1"
+    backstage.io/kubernetes-label-selector: "app=gitops-set-engine-v1"
+spec:
+  type: service
+  lifecycle: experimental
+  owner: "user:default/IvayloB84"
