@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-env-stable
+  labels:
+    app: postgres-env-stable
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-env-stable
+  template:
+    metadata:
+      labels:
+        app: postgres-env-stable
+    spec:
+      containers:
+        - name: app-container
+          image: "postgres:16-alpine"
+          ports:
+            - containerPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-env-stable
+  labels:
+    app: postgres-env-stable
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: postgres-env-stable
