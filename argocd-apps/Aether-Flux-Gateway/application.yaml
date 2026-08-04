@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "Aether-Flux-Gateway"
+  # LOCK IN: Kept in argocd namespace so your parent app-of-apps tracks it
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: "https://github.com/IvayloB84/Aether-Flux-Gateway.git"
+    targetRevision: "infra/add-Aether-Flux-Gateway"
+    path: k8s
+  destination:
+    server: 'https://kubernetes.default.svc'
+    # LANDING ZONE: Where your actual app code pod runs inside the cluster
+    namespace: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      selfHeal: true
