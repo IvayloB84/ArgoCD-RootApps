@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alpha-helix-resolver-deployment
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: alpha-helix-resolver
+  template:
+    metadata:
+      labels:
+        app: alpha-helix-resolver
+    spec:
+      containers:
+        - name: app-container
+          image: eclipse-temurin:17-jre-alpine
+          ports:
+            - containerPort: 8080
+          resources: {} 
