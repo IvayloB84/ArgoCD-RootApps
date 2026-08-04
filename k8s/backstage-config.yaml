@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backstage-config
+  namespace: default
+data:
+  app-config.yaml: |
+    app:
+      title: Backstage Pilot Portal
+    backend:
+      baseUrl: http://localhost:7007
+      cors:
+        origin: http://localhost:7007
+      # 🎯 THE ULTIMATE UNLOCK: Binds the environment variable to your internal auth layout rules!
+      auth:
+        keys:
+          - secret: ${BACKSTAGE_SECRET}
+    database:
+      client: pg
+      connection:
+        host: ${POSTGRES_HOST}
+        port: ${POSTGRES_PORT}
+        user: ${POSTGRES_USER}
+        password: ${POSTGRES_PASSWORD}
+        database: backstage_plugin_catalog
