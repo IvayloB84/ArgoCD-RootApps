@@ -6,15 +6,23 @@ metadata:
 data:
   app-config.yaml: |
     app:
-      title: Backstage Pilot Portal
+      title: Scaffolded Backstage Pilot
+      baseUrl: http://localhost:7007
+      packages: all
+      extensions:
+        - entity-content:catalog/kubernetes:
+            disabled: true
     backend:
       baseUrl: http://localhost:7007
+      listen:
+        port: 7007
       cors:
-        origin: http://localhost:7007
-      # 🎯 THE ULTIMATE UNLOCK: Binds the environment variable to your internal auth layout rules!
+        origin: [http://localhost:7007, http://127.0.0.1:7007]
+        methods: [GET, POST, PUT, DELETE, OPTIONS]
+        credentials: true
       auth:
         keys:
-          - secret: ${BACKSTAGE_SECRET}
+          - secret: "${BACKEND_SECRET}"
     database:
       client: pg
       connection:
@@ -23,3 +31,10 @@ data:
         user: ${POSTGRES_USER}
         password: ${POSTGRES_PASSWORD}
         database: backstage_plugin_catalog
+    # 🎯 THE CURE: Automatically populates the blank database with your master template forms on startup!
+    catalog:
+      import:
+        entityFilename: catalog-info.yaml
+      locations:
+        - type: url
+      target: https://github.com/IvayloB84/backstage-templates/blob/main/manifests/*.yaml
