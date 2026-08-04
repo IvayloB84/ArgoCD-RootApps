@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quantum-drift-sentinel
+  labels:
+    app: quantum-drift-sentinel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quantum-drift-sentinel
+  template:
+    metadata:
+      labels:
+        app: quantum-drift-sentinel
+    spec:
+      containers:
+        - name: app-container
+          image: "postgres:16-alpine"
+          ports:
+            - containerPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quantum-drift-sentinel
+  labels:
+    app: quantum-drift-sentinel
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: quantum-drift-sentinel
