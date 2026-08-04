@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: backstage-automation-engine
+  namespace: argocd
+spec:
+  generators:
+    - git:
+        repoURL: "https://github.com/IvayloB84/ArgoCD-RootApps.git"
+        revision: HEAD
+        directories:
+          - path: argocd-apps/*
+          - path: argocd-apps/backstage-pilot-system
+            exclude: true
+          - path: argocd-apps/global-apps-set
+            exclude: true
+  template:
+    metadata:
+      name: "{{path.basename}}"
+    spec:
+      project: default
+      source:
+        repoURL: "https://github.com/IvayloB84/{{path.basename}}.git"
+        targetRevision: HEAD
+        path: k8s
+      destination:
+        server: "https://kubernetes.default.svc"
+        namespace: default
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
