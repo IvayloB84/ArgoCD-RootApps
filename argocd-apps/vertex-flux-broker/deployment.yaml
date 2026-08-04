@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vertex-flux-broker
+  labels:
+    app: vertex-flux-broker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vertex-flux-broker
+  template:
+    metadata:
+      labels:
+        app: vertex-flux-broker
+    spec:
+      containers:
+        - name: app-container
+          image: "postgres:16-alpine"
+          ports:
+            - containerPort: 5432
+          env:
+            - name: SERVICE_TYPE
+              value: ""
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              value: "**************"
+            - name: POSTGRES_DB
+              value: "newdb_name"
+            - name: REDIS_PASSWORD
+              value: ""
+            - name: JAVA_OPTS
+              value: "-Xms512m -Xmx1024m"
+            - name: APP_ENV
+              value: "development"
+            - name: NGINX_ROUTING_PROFILE
+              value: ""
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vertex-flux-broker
+  labels:
+    app: vertex-flux-broker
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: vertex-flux-broker
