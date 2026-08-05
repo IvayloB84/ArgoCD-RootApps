@@ -6,8 +6,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: "https://github.com/IvayloB84/backstage-templates"
-    path: manifests
+    repoURL: "https://github.com/IvayloB84/backstage-pilot"
+    path: backstage-manifests
     targetRevision: main
   destination:
     server: "https://kubernetes.default.svc"
