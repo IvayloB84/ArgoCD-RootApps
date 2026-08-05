@@ -9,9 +9,11 @@ spec:
     repoURL: 'https://github.com/IvayloB84/ArgoCD-RootApps'
     targetRevision: main
     path: argocd-apps
+    directory:
+      recurse: true
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: default
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true
