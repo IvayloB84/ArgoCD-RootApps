@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vortex-packet-broker-deployment
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vortex-packet-broker
+  template:
+    metadata:
+      labels:
+        app: vortex-packet-broker
+    spec:
+      containers:
+        - name: app-container
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 80
+          resources: {} 
