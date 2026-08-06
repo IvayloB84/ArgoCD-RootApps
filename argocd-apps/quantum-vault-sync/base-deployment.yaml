@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quantum-vault-sync-deployment
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: quantum-vault-sync
+  template:
+    metadata:
+      labels:
+        app: quantum-vault-sync
+    spec:
+      containers:
+        - name: app-container
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+          resources: {} 
