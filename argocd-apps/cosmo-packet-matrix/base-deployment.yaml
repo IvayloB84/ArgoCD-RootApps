@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cosmo-packet-matrix-deployment
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cosmo-packet-matrix
+  template:
+    metadata:
+      labels:
+        app: cosmo-packet-matrix
+    spec:
+      containers:
+        - name: app-container
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+          resources: {} 
