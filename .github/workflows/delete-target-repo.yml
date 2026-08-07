@@ -12,20 +12,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code to Inspect Commit Diff
+      - name: Checkout Code to Inspect Commit History
         uses: actions/checkout@v7
         with:
           fetch-depth: 2 
           token: ${{ secrets.REPO_DELETE_PAT }} 
 
-      - name: Extract Repository Name from Modified Folders
+      - name: Extract Repository Name from Modified Paths
         id: parse
         run: |
-          # Detects the component name from the modified folder in the git changes
-          MODIFIED_FOLDER=$(git diff-tree --no-commit-id --name-only -r HEAD | grep '^argocd-apps/' | awk -F'/' '{print $2}' | sed 's/\.deleted$//' | uniq | head -n 1)
+          # Dig into the commit tracking metadata to see which folder changed
+          MODIFIED_FOLDER=$(git diff-tree --no-commit-id --name-only -r HEAD | grep '^argocd-apps/' | awk -F'/' '{print $2}' | uniq | head -n 1)
           
           if [ -z "$MODIFIED_FOLDER" ]; then
-            echo "No folder modification detected in the argocd-apps path. Terminating."
+            echo "No specific folder modification detected. Terminating."
             exit 0
           fi
           
@@ -37,9 +37,8 @@ jobs:
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
           
-          # Thoroughly purges any residual folders or placeholders from the main branch
+          # Delete the tracking directory shell from the production branch
           rm -rf "argocd-apps/${{ steps.parse.outputs.target_repo }}"
-          rm -rf "argocd-apps/${{ steps.parse.outputs.target_repo }}.deleted"
           
           git add .
           git commit -m "chore: clear directory footprints for ${{ steps.parse.outputs.target_repo }} [skip ci]" || echo "Clean"
