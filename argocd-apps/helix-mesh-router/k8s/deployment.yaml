@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helix-mesh-router
+  labels:
+    app: helix-mesh-router
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helix-mesh-router
+  template:
+    metadata:
+      labels:
+        app: helix-mesh-router
+    spec:
+      containers:
+        - name: app-container
+          image: "redis:7-alpine"
+          ports:
+            - containerPort: 6379
+          command: []
+          args: []
+          resources:
+            requests:
+              cpu: "25m"
+              memory: "16Mi"
+            limits:
+              cpu: "150m"
+              memory: "32Mi"
+          env:
+            - name: SERVICE_TYPE
+              value: "redis"
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              value: ""
+            - name: POSTGRES_DB
+              value: "postgres"
+            - name: REDIS_PASSWORD
+              value: ""
+            - name: JAVA_OPTS
+              value: ""
+            - name: APP_ENV
+              value: ""
+            - name: NGINX_ROUTING_PROFILE
+              value: ""
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helix-mesh-router
+  labels:
+    app: helix-mesh-router
+spec:
+  ports:
+    - port: 6379
+      targetPort: 6379
+  selector:
+    app: helix-mesh-router
