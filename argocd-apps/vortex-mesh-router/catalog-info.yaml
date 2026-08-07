@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: vortex-mesh-router
+  description: Freshly generated application. [Request Component Deactivation](/create/templates/default/deactivate-service-pipeline?template_args[repoName]=vortex-mesh-router)
+  annotations:
+    github.com/project-slug: "IvayloB84/vortex-mesh-router"
+    argocd/app-name: "vortex-mesh-router"
+    backstage.io/kubernetes-label-selector: "app=vortex-mesh-router"
+spec:
+  type: service
+  lifecycle: experimental
+  owner: "user:default/IvayloB84"
