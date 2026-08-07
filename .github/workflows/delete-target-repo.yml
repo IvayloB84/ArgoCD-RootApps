@@ -1,70 +1,52 @@
-name: Automated Deactivation and Repository Cleanup
+name: Post-Merge Target Repository Deletion
 
 on:
-  pull_request:
-    types: [opened, closed]
+  push:
     branches:
       - main
+    paths:
+      - 'argocd-apps/**'
 
 jobs:
-  # PHASE 1: Generates the visual verification layout on the PR page for the admin instantly
-  verify-deactivation-intent:
-    if: github.event.action == 'opened' && startsWith(github.event.pull_request.head.ref, 'cleanup-remove-')
+  delete-external-repo:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Backstage PR Branch
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          token: ${{ secrets.REPO_DELETE_PAT }}
 
-      - name: Extract Target App Name
+    steps:
+      - name: Checkout Code to Inspect Commit Diff
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 2 
+          token: ${{ secrets.REPO_DELETE_PAT }} 
+
+      - name: Extract Repository Name from Modified Folders
         id: parse
         run: |
-          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
-          REPO_TO_DELETE="${BRANCH_NAME#cleanup-remove-}"
-          echo "target_repo=$REPO_TO_DELETE" >> $GITHUB_OUTPUT
+          # Detects the component name from the modified folder in the git changes
+          MODIFIED_FOLDER=$(git diff-tree --no-commit-id --name-only -r HEAD | grep '^argocd-apps/' | awk -F'/' '{print $2}' | sed 's/\.deleted$//' | uniq | head -n 1)
+          
+          if [ -z "$MODIFIED_FOLDER" ]; then
+            echo "No folder modification detected in the argocd-apps path. Terminating."
+            exit 0
+          fi
+          
+          echo "target_repo=$MODIFIED_FOLDER" >> $GITHUB_OUTPUT
 
-      - name: Force a Visual Deletion Warning Diff in the PR Viewport
+      - name: Force Clean Folder Container Footprints from Main Branch
+        if: steps.parse.outputs.target_repo != ''
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
           
-          # Overwrites the app file on the PR branch with a clear text warning to generate the red diff
-          mkdir -p "argocd-apps/${{ steps.parse.outputs.target_repo }}"
-          echo "DEACTIVATION_AUTHORIZED: This tracking node is marked for complete platform removal." > "argocd-apps/${{ steps.parse.outputs.target_repo }}/DELETION_NOTICE.txt"
-          
-          git add .
-          git commit -m "chore: inject infrastructure deactivation manifest clearance logs"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
-
-  # PHASE 2: Triggered ONLY when an admin explicitly reviews the diff and clicks MERGE
-  execute-platform-destruction:
-    if: github.event.action == 'closed' && github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'cleanup-remove-')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Main Branch Following Merge
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.REPO_DELETE_PAT }}
-
-      - name: Extract Target App Name
-        id: parse
-        run: |
-          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
-          REPO_TO_DELETE="${BRANCH_NAME#cleanup-remove-}"
-          echo "target_repo=$REPO_TO_DELETE" >> $GITHUB_OUTPUT
-
-      - name: Wipe Folder Completely From Main Branch
-        run: |
-          git config --global user.name "GitHub Actions Bot"
-          git config --global user.email "actions@github.com"
+          # Thoroughly purges any residual folders or placeholders from the main branch
           rm -rf "argocd-apps/${{ steps.parse.outputs.target_repo }}"
+          rm -rf "argocd-apps/${{ steps.parse.outputs.target_repo }}.deleted"
+          
           git add .
-          git commit -m "chore: purge registration directory for ${{ steps.parse.outputs.target_repo }} [skip ci]" || echo "Clear"
+          git commit -m "chore: clear directory footprints for ${{ steps.parse.outputs.target_repo }} [skip ci]" || echo "Clean"
           git push origin main
 
       - name: Permanently Delete Standalone Target Repository via REST API
+        if: steps.parse.outputs.target_repo != ''
         env:
           ACCOUNT_TOKEN: ${{ secrets.REPO_DELETE_PAT }}
         run: |
@@ -74,9 +56,10 @@ jobs:
             -H "Authorization: Bearer $ACCOUNT_TOKEN" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             "https://api.github.com/repos/${{ github.repository_owner }}/${{ steps.parse.outputs.target_repo }}")
+
           if [ "$RESPONSE" -ne 204 ]; then
-            echo "API Deletion Failure"
+            echo "API Execution Failed with Status Code: $RESPONSE"
             cat response.json
             exit 1
           fi
-          echo "Success! Target repository permanently deleted."
+          echo "Success! Repository has been permanently removed."
