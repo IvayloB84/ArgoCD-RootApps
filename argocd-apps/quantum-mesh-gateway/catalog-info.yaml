@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: quantum-mesh-gateway
+  description: Freshly generated application. [Request Component Deactivation](/create/templates/default/deactivate-service-pipeline?template_args[repoName]=quantum-mesh-gateway)
+  annotations:
+    github.com/project-slug: "IvayloB84/quantum-mesh-gateway"
+    argocd/app-name: "quantum-mesh-gateway"
+    backstage.io/kubernetes-label-selector: "app=quantum-mesh-gateway"
+spec:
+  type: service
+  lifecycle: experimental
+  owner: "user:default/IvayloB84"
