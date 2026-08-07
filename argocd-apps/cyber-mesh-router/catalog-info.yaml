@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: cyber-mesh-router
+  description: Freshly generated application. [Request Component Deactivation](/create/templates/default/deactivate-service-pipeline?template_args[repoName]=cyber-mesh-router)
+  annotations:
+    github.com/project-slug: "IvayloB84/cyber-mesh-router"
+    argocd/app-name: "cyber-mesh-router"
+    backstage.io/kubernetes-label-selector: "app=cyber-mesh-router"
+spec:
+  type: service
+  lifecycle: experimental
+  owner: "user:default/IvayloB84"

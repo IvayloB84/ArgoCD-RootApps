@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cyber-mesh-router
+  labels:
+    app: cyber-mesh-router
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cyber-mesh-router
+  template:
+    metadata:
+      labels:
+        app: cyber-mesh-router
+    spec:
+      containers:
+        - name: app-container
+          image: "postgres:16-alpine"
+          ports:
+            - containerPort: 5432
+          command: ["sh","-c"]
+          args: ["echo Runtime container initialized. Waiting for code deployment... && sleep infinity"]
+          resources:
+            requests:
+              cpu: "25m"
+              memory: "16Mi"
+            limits:
+              cpu: "150m"
+              memory: "32Mi"
+          env:
+            - name: SERVICE_TYPE
+              value: "java"
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              value: ""
+            - name: POSTGRES_DB
+              value: "app_db"
+            - name: REDIS_PASSWORD
+              value: ""
+            - name: JAVA_OPTS
+              value: "-Xms512m -Xmx1024m"
+            - name: APP_ENV
+              value: "development"
+            - name: NGINX_ROUTING_PROFILE
+              value: ""
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cyber-mesh-router
+  labels:
+    app: cyber-mesh-router
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: cyber-mesh-router
