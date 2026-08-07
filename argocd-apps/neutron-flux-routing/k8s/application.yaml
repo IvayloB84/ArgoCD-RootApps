@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "neutron-flux-routing"
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: "https://github.com/IvayloB84/ArgoCD-RootApps.git"
+    targetRevision: HEAD
+    path: "argocd-apps/neutron-flux-routing"
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      selfHeal: true
