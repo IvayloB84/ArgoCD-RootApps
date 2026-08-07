@@ -1,32 +1,32 @@
 name: Post-Merge Target Repository Deletion
 
 on:
-  pull_request:
-    types: [closed]
-    branches:
-      - main
+  # This event executes with full repository secrets access
+  workflow_run:
+    workflows: ["CI/CD Pipeline"] # Must match the exact name of your primary pipeline
+    types:
+      - completed
 
 jobs:
   delete-external-repo:
-    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'cleanup-remove-')
+    # Only execute if the upstream pipeline completed and it was a Backstage branch merge
+    if: ${{ github.event.workflow_run.conclusion == 'success' && startsWith(github.event.workflow_run.head_branch, 'cleanup-remove-') }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Extract Repository Name from Branch
+      - name: Extract Repository Name from Upstream Branch
         id: parse
         run: |
-          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          BRANCH_NAME="${{ github.event.workflow_run.head_branch }}"
           REPO_TO_DELETE="${BRANCH_NAME#cleanup-remove-}"
           echo "target_repo=$REPO_TO_DELETE" >> $GITHUB_OUTPUT
 
       - name: Permanently Delete Target Repository via REST API
-        # FIXED: Isolate the secret inside an explicit environment scope to protect special characters
         env:
           ACCOUNT_TOKEN: ${{ secrets.REPO_DELETE_PAT }}
         run: |
-          echo "Merging completed. Deleting standalone repository: ${{ steps.parse.outputs.target_repo }}"
+          echo "Upstream merge pipeline completed. Deleting standalone repository: ${{ steps.parse.outputs.target_repo }}"
           
-          # Use raw shell variable expansion to prevent Bash text string mangling
           RESPONSE=$(curl -s -o response.json -w "%{http_code}" \
             -X DELETE \
             -H "Accept: application/vnd.github+json" \
@@ -39,4 +39,4 @@ jobs:
             cat response.json
             exit 1
           fi
-          echo "Success! Repository has been permanently removed."
+          echo "Success! Repository has been permanently removed from your profile."
