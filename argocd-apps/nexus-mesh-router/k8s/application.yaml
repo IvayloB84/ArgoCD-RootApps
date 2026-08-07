@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "nexus-mesh-router"
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  annotations:
+    argocd.argoproj.io/manifest-generate-paths: "argocd-apps/nexus-mesh-router"
+spec:
+  project: default
+  source:
+    repoURL: "https://github.com/IvayloB84/ArgoCD-RootApps.git"
+    targetRevision: main
+    path: "argocd-apps/nexus-mesh-router/k8s"
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      selfHeal: true
