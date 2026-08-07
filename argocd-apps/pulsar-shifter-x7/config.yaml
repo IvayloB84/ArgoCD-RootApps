@@ -1,6 +1,0 @@
-appName: ""
-repoURL: "https://github.com/IvayloB84/pulsar-shifter-x7.git"
-targetRevision: "main"
-path: "k8s"
-# Append your custom Backstage parameters here later:
-language: "" # e.g., nodeJS, python, go
