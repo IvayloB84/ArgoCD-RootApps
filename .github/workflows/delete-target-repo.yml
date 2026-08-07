@@ -21,9 +21,10 @@ jobs:
 
       - name: Permanently Delete Target Repository
         env:
+          # Your config continues to reference your PAT perfectly
           GITHUB_TOKEN: ${{ secrets.REPO_DELETE_PAT }} 
+          # FIXED: Explicitly added GH_TOKEN so the native GitHub CLI tool can authenticate
+          GH_TOKEN: ${{ secrets.REPO_DELETE_PAT }} 
         run: |
           echo "Merging completed. Deleting standalone repository: ${{ steps.parse.outputs.target_repo }}"
-          # FIXED: Wrapped environment mapping in explicit quotes and forced non-interactive execution
-          echo "${GITHUB_TOKEN}" | gh auth login --with-token
           gh repo delete "${{ github.repository_owner }}/${{ steps.parse.outputs.target_repo }}" --yes
