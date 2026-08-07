@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-    # Triggers instantly whenever a commit modifies or removes files inside this specific directory
+    # Triggers instantly whenever a commit on main removes/alters files in this folder
     paths:
       - 'argocd-apps/**'
 
@@ -13,23 +13,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code to Inspect Commit Diff
+      - name: Checkout Code to Inspect Commit History
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2 # Fetch the merge commit and its parent to look for the deleted directory name
+          fetch-depth: 2 # Fetches current commit and parent to compare changes
 
       - name: Extract Repository Name from Deleted Folder
         id: parse
         run: |
-          # Use Git to find which specific subdirectory under argocd-apps/ was changed or removed
+          # Finds which subfolder name under argocd-apps/ vanished or changed in this merge commit
           DELETED_FOLDER=$(git diff-tree --no-commit-id --name-only -r HEAD | grep '^argocd-apps/' | awk -F'/' '{print $2}' | uniq | head -n 1)
           
           if [ -z "$DELETED_FOLDER" ]; then
-            echo "No specific folder modification detected in the argocd-apps block. Terminating."
+            echo "No specific folder modification detected in the argocd-apps block. Aborting."
             exit 0
           fi
           
-          echo "Target repository detected: $DELETED_FOLDER"
+          echo "Extracted target repository name: $DELETED_FOLDER"
           echo "target_repo=$DELETED_FOLDER" >> $GITHUB_OUTPUT
 
       - name: Permanently Delete Target Repository via REST API
@@ -37,8 +37,9 @@ jobs:
         env:
           ACCOUNT_TOKEN: ${{ secrets.REPO_DELETE_PAT }}
         run: |
-          echo "Folder change processed. Purging standalone repository: ${{ steps.parse.outputs.target_repo }}"
+          echo "Folder change detected. Purging standalone repository: ${{ steps.parse.outputs.target_repo }}"
           
+          # Executes a direct DELETE call to the strict ://github.com endpoint with closing parenthesis
           RESPONSE=$(curl -s -o response.json -w "%{http_code}" \
             -X DELETE \
             -H "Accept: application/vnd.github+json" \
@@ -51,4 +52,4 @@ jobs:
             cat response.json
             exit 1
           fi
-          echo "Success! Repository has been permanently removed from your profile."
+          echo "Success! Repository has been permanently removed."
