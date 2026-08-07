@@ -4,11 +4,10 @@ on:
   pull_request:
     types: [closed]
     branches:
-      - main # Change to master if your default branch is different
+      - main
 
 jobs:
   delete-external-repo:
-    # Only run if the PR was actually merged and came from our Backstage branch prefix
     if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'cleanup-remove-')
     runs-on: ubuntu-latest
     
@@ -17,14 +16,14 @@ jobs:
         id: parse
         run: |
           BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
-          # Strips the 'cleanup-remove-' prefix to isolate the original repoName
           REPO_TO_DELETE="${BRANCH_NAME#cleanup-remove-}"
           echo "target_repo=$REPO_TO_DELETE" >> $GITHUB_OUTPUT
 
       - name: Permanently Delete Target Repository
         env:
-          # Your PAT must be saved in this centralized repo's Secrets with 'delete_repo' scope
           GITHUB_TOKEN: ${{ secrets.REPO_DELETE_PAT }} 
         run: |
           echo "Merging completed. Deleting standalone repository: ${{ steps.parse.outputs.target_repo }}"
+          # FIXED: Wrapped environment mapping in explicit quotes and forced non-interactive execution
+          echo "${GITHUB_TOKEN}" | gh auth login --with-token
           gh repo delete "${{ github.repository_owner }}/${{ steps.parse.outputs.target_repo }}" --yes
