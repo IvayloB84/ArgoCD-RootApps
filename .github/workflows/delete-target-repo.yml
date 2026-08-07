@@ -1,31 +1,43 @@
 name: Post-Merge Target Repository Deletion
 
 on:
-  # This event executes with full repository secrets access
-  workflow_run:
-    workflows: ["CI/CD Pipeline"] # Must match the exact name of your primary pipeline
-    types:
-      - completed
+  push:
+    branches:
+      - main
+    # Triggers instantly whenever a commit modifies or removes files inside this specific directory
+    paths:
+      - 'argocd-apps/**'
 
 jobs:
   delete-external-repo:
-    # Only execute if the upstream pipeline completed and it was a Backstage branch merge
-    if: ${{ github.event.workflow_run.conclusion == 'success' && startsWith(github.event.workflow_run.head_branch, 'cleanup-remove-') }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Extract Repository Name from Upstream Branch
+      - name: Checkout Code to Inspect Commit Diff
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # Fetch the merge commit and its parent to look for the deleted directory name
+
+      - name: Extract Repository Name from Deleted Folder
         id: parse
         run: |
-          BRANCH_NAME="${{ github.event.workflow_run.head_branch }}"
-          REPO_TO_DELETE="${BRANCH_NAME#cleanup-remove-}"
-          echo "target_repo=$REPO_TO_DELETE" >> $GITHUB_OUTPUT
+          # Use Git to find which specific subdirectory under argocd-apps/ was changed or removed
+          DELETED_FOLDER=$(git diff-tree --no-commit-id --name-only -r HEAD | grep '^argocd-apps/' | awk -F'/' '{print $2}' | uniq | head -n 1)
+          
+          if [ -z "$DELETED_FOLDER" ]; then
+            echo "No specific folder modification detected in the argocd-apps block. Terminating."
+            exit 0
+          fi
+          
+          echo "Target repository detected: $DELETED_FOLDER"
+          echo "target_repo=$DELETED_FOLDER" >> $GITHUB_OUTPUT
 
       - name: Permanently Delete Target Repository via REST API
+        if: steps.parse.outputs.target_repo != ''
         env:
           ACCOUNT_TOKEN: ${{ secrets.REPO_DELETE_PAT }}
         run: |
-          echo "Upstream merge pipeline completed. Deleting standalone repository: ${{ steps.parse.outputs.target_repo }}"
+          echo "Folder change processed. Purging standalone repository: ${{ steps.parse.outputs.target_repo }}"
           
           RESPONSE=$(curl -s -o response.json -w "%{http_code}" \
             -X DELETE \
