@@ -1,59 +1,58 @@
-name: Post-Merge Target Repository Deletion
+name: Automated Deactivation and Repository Cleanup
 
 on:
-  push:
+  pull_request:
+    types: [opened, closed]
     branches:
       - main
-    paths:
-      - 'argocd-apps/**'
 
 jobs:
-  delete-external-repo:
+  # PHASE 1: Wakes up when Backstage opens the PR and pushes the folder deletion diff for the administrator
+  inject-folder-deletion:
+    if: github.event.action == 'opened' && startsWith(github.event.pull_request.head.ref, 'cleanup-remove-')
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Code to Inspect Commit Diff
+      - name: Checkout Backstage PR Branch
         uses: actions/checkout@v7
         with:
-          fetch-depth: 2 
-          # Crucial: Use your administrative PAT so this runner can push folder deletions back to main
-          token: ${{ secrets.REPO_DELETE_PAT }} 
+          ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ secrets.REPO_DELETE_PAT }}
 
-      - name: Extract Repository Name from Deleted Folder
+      - name: Extract Target App Name
         id: parse
         run: |
-          DELETED_FOLDER=$(git diff-tree --no-commit-id --name-only -r HEAD | grep '^argocd-apps/' | awk -F'/' '{print $2}' | uniq | head -n 1)
-          
-          if [ -z "$DELETED_FOLDER" ]; then
-            echo "No specific folder modification detected in the argocd-apps block. Terminating."
-            exit 0
-          fi
-          
-          echo "Target repository detected: $DELETED_FOLDER"
-          echo "target_repo=$DELETED_FOLDER" >> $GITHUB_OUTPUT
+          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          REPO_TO_DELETE="${BRANCH_NAME#cleanup-remove-}"
+          echo "target_repo=$REPO_TO_DELETE" >> $GITHUB_OUTPUT
 
-      # FIXED: Added this step to force-delete the empty folder shell from the main branch
-      - name: Force Clean Folder Container from Main Branch
-        if: steps.parse.outputs.target_repo != ''
+      - name: Commit and Push Folder Deletion directly to PR
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
           
-          # Wipe the entire folder directory shell completely from disk
+          # Force delete the directory from the branch disk
           rm -rf "argocd-apps/${{ steps.parse.outputs.target_repo }}"
           
-          # Commit the folder removal directly back into main branch
           git add .
-          git commit -m "chore: complete automated folder removal for ${{ steps.parse.outputs.target_repo }} [skip ci]" || echo "Folder already fully clear"
-          git push origin main
+          git commit -m "chore: automated removal of argocd-apps/${{ steps.parse.outputs.target_repo }} layout"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+
+  # PHASE 2: Wakes up ONLY when the administrator clicks Merge to permanently delete the code repository
+  delete-external-repo:
+    if: github.event.action == 'closed' && github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'cleanup-remove-')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract Target Repository Name
+        id: parse
+        run: |
+          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          REPO_TO_DELETE="${BRANCH_NAME#cleanup-remove-}"
+          echo "target_repo=$REPO_TO_DELETE" >> $GITHUB_OUTPUT
 
       - name: Permanently Delete Target Repository via REST API
-        if: steps.parse.outputs.target_repo != ''
         env:
           ACCOUNT_TOKEN: ${{ secrets.REPO_DELETE_PAT }}
         run: |
-          echo "Folder change processed. Purging standalone repository: ${{ steps.parse.outputs.target_repo }}"
-          
           RESPONSE=$(curl -s -o response.json -w "%{http_code}" \
             -X DELETE \
             -H "Accept: application/vnd.github+json" \
@@ -66,4 +65,4 @@ jobs:
             cat response.json
             exit 1
           fi
-          echo "Success! Repository has been permanently removed from your profile."
+          echo "Success! Repository has been permanently removed."
