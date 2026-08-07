@@ -1,8 +1,14 @@
-name: Rails GitOps CI/CD Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
     branches: [ "main" ]
+    paths-ignore:
+      - 'argocd-apps/**'
+  pull_request:
+    branches: [ "main" ]
+    branches-ignore:
+      - 'cleanup-remove-*'
 
 jobs:
   build-and-deploy:
