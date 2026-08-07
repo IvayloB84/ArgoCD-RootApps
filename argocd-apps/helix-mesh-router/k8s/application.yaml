@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "helix-mesh-router"
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: "https://github.com/IvayloB84/ArgoCD-RootApps.git"
+    targetRevision: main
+    path: "argocd-apps/helix-mesh-router/k8s"
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      selfHeal: true
