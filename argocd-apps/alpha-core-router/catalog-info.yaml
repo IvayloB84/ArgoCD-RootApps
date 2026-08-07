@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: alpha-core-router
+  description: Freshly generated application. [Request Component Deactivation](/create/templates/default/deactivate-service-pipeline?template_args[repoName]=alpha-core-router)
+  annotations:
+    github.com/project-slug: "IvayloB84/alpha-core-router"
+    argocd/app-name: "alpha-core-router"
+    backstage.io/kubernetes-label-selector: "app=alpha-core-router"
+spec:
+  type: service
+  lifecycle: experimental
+  owner: "user:default/IvayloB84"
