@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-    # Triggers instantly whenever a commit on main removes/alters files in this folder
     paths:
       - 'argocd-apps/**'
 
@@ -13,33 +12,48 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code to Inspect Commit History
+      - name: Checkout Code to Inspect Commit Diff
         uses: actions/checkout@v7
         with:
-          fetch-depth: 2 # Fetches current commit and parent to compare changes
+          fetch-depth: 2 
+          # Crucial: Use your administrative PAT so this runner can push folder deletions back to main
+          token: ${{ secrets.REPO_DELETE_PAT }} 
 
       - name: Extract Repository Name from Deleted Folder
         id: parse
         run: |
-          # Finds which subfolder name under argocd-apps/ vanished or changed in this merge commit
           DELETED_FOLDER=$(git diff-tree --no-commit-id --name-only -r HEAD | grep '^argocd-apps/' | awk -F'/' '{print $2}' | uniq | head -n 1)
           
           if [ -z "$DELETED_FOLDER" ]; then
-            echo "No specific folder modification detected in the argocd-apps block. Aborting."
+            echo "No specific folder modification detected in the argocd-apps block. Terminating."
             exit 0
           fi
           
-          echo "Extracted target repository name: $DELETED_FOLDER"
+          echo "Target repository detected: $DELETED_FOLDER"
           echo "target_repo=$DELETED_FOLDER" >> $GITHUB_OUTPUT
+
+      # FIXED: Added this step to force-delete the empty folder shell from the main branch
+      - name: Force Clean Folder Container from Main Branch
+        if: steps.parse.outputs.target_repo != ''
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          
+          # Wipe the entire folder directory shell completely from disk
+          rm -rf "argocd-apps/${{ steps.parse.outputs.target_repo }}"
+          
+          # Commit the folder removal directly back into main branch
+          git add .
+          git commit -m "chore: complete automated folder removal for ${{ steps.parse.outputs.target_repo }} [skip ci]" || echo "Folder already fully clear"
+          git push origin main
 
       - name: Permanently Delete Target Repository via REST API
         if: steps.parse.outputs.target_repo != ''
         env:
           ACCOUNT_TOKEN: ${{ secrets.REPO_DELETE_PAT }}
         run: |
-          echo "Folder change detected. Purging standalone repository: ${{ steps.parse.outputs.target_repo }}"
+          echo "Folder change processed. Purging standalone repository: ${{ steps.parse.outputs.target_repo }}"
           
-          # Executes a direct DELETE call to the strict ://github.com endpoint with closing parenthesis
           RESPONSE=$(curl -s -o response.json -w "%{http_code}" \
             -X DELETE \
             -H "Accept: application/vnd.github+json" \
@@ -52,4 +66,4 @@ jobs:
             cat response.json
             exit 1
           fi
-          echo "Success! Repository has been permanently removed."
+          echo "Success! Repository has been permanently removed from your profile."
