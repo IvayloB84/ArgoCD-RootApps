@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: neutron-flux-routing
+  description: Freshly generated application. [Request Component Deactivation](/create/templates/default/deactivate-service-pipeline?template_args[repoName]=neutron-flux-routing)
+  annotations:
+    github.com/project-slug: "IvayloB84/neutron-flux-routing"
+    argocd/app-name: "neutron-flux-routing"
+    backstage.io/kubernetes-label-selector: "app=neutron-flux-routing"
+spec:
+  type: service
+  lifecycle: experimental
+  owner: "user:default/IvayloB84"
