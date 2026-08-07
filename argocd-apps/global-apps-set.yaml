@@ -6,25 +6,23 @@ metadata:
 spec:
   generators:
     - git:
-        repoURL: "https://github.com/IvayloB84/ArgoCD-RootApps"
+        repoURL: "https://github.com/IvayloB84/ArgoCD-RootApps.git"
         revision: main
-        files:
-          - path: "argocd-apps/*/config.yaml"
+        directories:
+          - path: "argocd-apps/*"
   syncPolicy:
     preserveResourcesOnDeletion: false
   template:
     metadata:
-      name: "{{appName}}" # Populated by config.json
-      finalizers:
-        - resources-finalizer.argocd.argoproj.io
+      name: "{{path.basename}}"
       annotations:
-        argocd.argoproj.io/manifest-generate-paths: "argocd-apps/{{appName}}"
+        argocd.argoproj.io/manifest-generate-paths: "{{path}}"
     spec:
       project: default
       source:
-        repoURL: "{{repoURL}}"
-        targetRevision: "{{targetRevision}}"
-        path: "{{path}}"
+        repoURL: "https://github.com/IvayloB84/ArgoCD-RootApps.git"
+        targetRevision: main
+        path: "{{path}}/k8s"
       destination:
         server: "https://kubernetes.default.svc"
         namespace: default
