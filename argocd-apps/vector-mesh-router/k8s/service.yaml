@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "vector-mesh-router"
+  labels:
+    app: "vector-mesh-router"
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: "vector-mesh-router"
