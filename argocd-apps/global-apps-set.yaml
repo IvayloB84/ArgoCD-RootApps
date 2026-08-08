@@ -5,11 +5,19 @@ metadata:
   namespace: argocd
 spec:
   generators:
-    - git:
-        repoURL: "https://github.com/IvayloB84/ArgoCD-RootApps.git"
-        revision: main
-        directories:
-          - path: "argocd-apps/*/"
+    - matrix:
+        generators:
+          - git:
+              repoURL: "https://github.com/IvayloB84/ArgoCD-RootApps.git"
+              revision: main
+              directories:
+                - path: "argocd-apps/*/"
+          - git:
+              repoURL: "https://github.com/IvayloB84/backstage-templates.git"
+              revision: main
+              pathParamPrefix: backstage-pilot 
+              files:
+                - path: "k8s/deployment.yaml"
   syncPolicy:
     preserveResourcesOnDeletion: false
   template:
@@ -19,10 +27,13 @@ spec:
         argocd.argoproj.io/manifest-generate-paths: "{{path}}/*"
     spec:
       project: default
-      source:
-        repoURL: "https://github.com/IvayloB84/ArgoCD-RootApps.git"
-        targetRevision: main
-        path: "{{path}}/k8s"
+      sources:
+        - repoURL: "https://github.com/IvayloB84/ArgoCD-RootApps.git"
+          targetRevision: main
+          path: "{{path}}/k8s"
+        - repoURL: "https://github.com/IvayloB84/{{path.basename}}.git"
+          targetRevision: main
+          ref: active-component-code
       destination:
         server: "https://kubernetes.default.svc"
         namespace: default
