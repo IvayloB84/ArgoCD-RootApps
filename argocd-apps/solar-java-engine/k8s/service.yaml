@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "solar-java-engine"
+  labels:
+    app: "solar-java-engine"
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: "solar-java-engine"
