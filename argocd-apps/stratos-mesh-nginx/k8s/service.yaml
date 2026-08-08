@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "stratos-mesh-nginx"
+  labels:
+    app: "stratos-mesh-nginx"
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: "stratos-mesh-nginx"
