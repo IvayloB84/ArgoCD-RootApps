@@ -16,7 +16,7 @@ spec:
     metadata:
       name: "{{path.basename}}"
       annotations:
-        argocd.argoproj.io/manifest-generate-paths: "{{path}}"
+        argocd.argoproj.io/manifest-generate-paths: "{{path}}/*"
     spec:
       project: default
       source:
