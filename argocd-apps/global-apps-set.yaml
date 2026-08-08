@@ -9,7 +9,7 @@ spec:
         repoURL: "https://github.com/IvayloB84/ArgoCD-RootApps.git"
         revision: main
         directories:
-          - path: "argocd-apps/*/k8s"
+          - path: "argocd-apps/*"
   syncPolicy:
     preserveResourcesOnDeletion: false
   template:
@@ -22,7 +22,7 @@ spec:
       source:
         repoURL: "https://github.com/IvayloB84/ArgoCD-RootApps.git"
         targetRevision: main
-        path: "{{path}}"
+        path: "{{path}}/k8s"
       destination:
         server: "https://kubernetes.default.svc"
         namespace: default
