@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "matrix-flux-modulator"
+  labels:
+    app: "matrix-flux-modulator"
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: "matrix-flux-modulator"
