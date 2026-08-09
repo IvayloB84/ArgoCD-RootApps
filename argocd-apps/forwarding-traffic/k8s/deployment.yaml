@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "forwarding-traffic"
+  labels:
+    app: "forwarding-traffic"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "forwarding-traffic"
+  template:
+    metadata:
+      labels:
+        app: "forwarding-traffic"
+    spec:
+      containers:
+        - name: app-container
+          image: "redis:7-alpine"
+          ports:
+            - containerPort: 6379
+          command: []
+          args: []
+          resources:
+            requests:
+              cpu: "25m"
+              memory: "16Mi"
+            limits:
+              cpu: "150m"
+              memory: "32Mi"
+          env:
+            - name: SERVICE_TYPE
+              value: "redis"
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              value: ""
+            - name: POSTGRES_DB
+              value: "postgres"
+            - name: REDIS_PASSWORD
+              value: ""
+            - name: JAVA_OPTS
+              value: ""
+            - name: APP_ENV
+              value: ""
+            - name: NGINX_ROUTING_PROFILE
+              value: ""
