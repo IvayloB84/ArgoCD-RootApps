@@ -1,0 +1,10 @@
+apiVersion: gitops.lifecycle.io/v1alpha1
+kind: DeactivationRequest
+metadata:
+  name: stratos-mesh-router
+  owner: IvayloB84
+  annotations:
+    backstage.io/source-template: template:default/deactivate-component-template
+spec:
+  targetDirectory: argocd-apps/stratos-mesh-router
+  action: PERMANENT_OBLITERATION
