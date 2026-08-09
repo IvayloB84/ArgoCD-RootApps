@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stratos-mesh-router-deactivated
+  namespace: default
+  annotations:
+    status: deactivated-via-backstage-runbook
+    backstage.io/source-template: template:default/deactivate-component-template
+data:
+  message: This infrastructure module has been officially decommissioned.
