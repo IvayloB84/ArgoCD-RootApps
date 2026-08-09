@@ -1,0 +1,7 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: ComponentLifecycle
+metadata:
+  name: stratos-mesh-router
+  status: deactivated
+  annotations:
+    backstage.io/source-template: template:default/deactivate-component-template
