@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "matrix-flux-modulator"
+  description: "Freshly generated application."
+  annotations:
+    github.com/project-slug: "IvayloB84/matrix-flux-modulator"
+    argocd/app-name: "matrix-flux-modulator"
+    backstage.io/kubernetes-label-selector: "app=matrix-flux-modulator"
+spec:
+  type: service
+  lifecycle: experimental
+  owner: "user:default/IvayloB84"
