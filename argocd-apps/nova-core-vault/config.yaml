@@ -1,0 +1,6 @@
+appName: ""
+repoURL: "https://github.com/IvayloB84/nova-core-vault.git"
+targetRevision: "main"
+path: "k8s"
+# Append your custom Backstage parameters here later:
+language: "" # e.g., nodeJS, python, go
