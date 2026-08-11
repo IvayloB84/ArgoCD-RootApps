@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "quantum-sync-loop"
+  description: "Freshly generated application."
+  annotations:
+    github.com/project-slug: "IvayloB84/quantum-sync-loop"
+    argocd/app-name: "quantum-sync-loop"
+    backstage.io/kubernetes-label-selector: "app=quantum-sync-loop"
+spec:
+  type: service
+  lifecycle: experimental
+  owner: "user:default/IvayloB84"
