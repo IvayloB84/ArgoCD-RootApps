@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "stream-decouple-test"
+  description: "Freshly generated web application."
+  annotations:
+    github.com/project-slug: "IvayloB84/stream-decouple-test"
+    argocd/app-name: "stream-decouple-test"
+    backstage.io/kubernetes-label-selector: "app=stream-decouple-test"
+spec:
+  type: service
+  lifecycle: experimental
+  owner: "user:default/IvayloB84"
