@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "stratus-sync-net"
+  description: "Freshly generated web application."
+  annotations:
+    github.com/project-slug: "IvayloB84/stratus-sync-net"
+    argocd/app-name: "stratus-sync-net"
+    backstage.io/kubernetes-label-selector: "app=stratus-sync-net"
+spec:
+  type: service
+  lifecycle: experimental
+  owner: "user:default/IvayloB84"
