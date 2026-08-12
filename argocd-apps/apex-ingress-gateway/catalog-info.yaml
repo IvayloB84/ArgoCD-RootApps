@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "apex-ingress-gateway"
+  description: "Production testing proxy engine using dynamic variable resolution."
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: "IvayloB84/apex-ingress-gateway"
+    argocd/app-name: "apex-ingress-gateway"
+    backstage.io/kubernetes-label-selector: "app=apex-ingress-gateway"
+spec:
+  type: service
+  lifecycle: production
+  owner: "user:default/IvayloB84"
