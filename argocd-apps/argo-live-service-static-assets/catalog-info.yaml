@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "argo-live-service-static-assets"
+  description: "Freshly generated web application."
+  annotations:
+    github.com/project-slug: "IvayloB84/argo-live-service-static-assets"
+    argocd/app-name: "argo-live-service-static-assets"
+    backstage.io/kubernetes-label-selector: "app=argo-live-service-static-assets-static"
+spec:
+  type: service
+  lifecycle: production
+  owner: "user:default/IvayloB84"
