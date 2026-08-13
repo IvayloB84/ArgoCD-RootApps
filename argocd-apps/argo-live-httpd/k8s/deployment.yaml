@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "argo-live-httpd-static"
+  labels:
+    app: "argo-live-httpd-static"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "argo-live-httpd-static"
+  template:
+    metadata:
+      labels:
+        app: "argo-live-httpd-static"
+    spec:
+      securityContext:
+        fsGroup: 65534
+      containers:
+        # 1. Secure Unprivileged Apache HTTPD Server Layer
+        - name: app-container
+          image: "nginx:alpine"
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: code-stream-volume
+              mountPath: "/usr/share/nginx/html"
+            - name: httpd-logs
+              mountPath: /usr/local/apache2/logs
+          resources:
+            requests:
+              cpu: "25m"
+              memory: "16Mi"
+            limits:
+              cpu: "150m"
+              memory: "32Mi"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: false
+            runAsUser: 101
+            runAsGroup: 101
+
+        # 2. Automated Git-Sync Sidecar Layer
+        - name: git-sync-sidecar
+          image: "registry.k8s.io/git-sync/git-sync:v4.7.1"
+          args:
+            - "--repo=https://github.com/IvayloB84/argo-live-httpd.git"
+            - "--branch=main"
+            - "--depth=1"
+            - "--wait=10"
+            - "--root=/tmp/git"
+            - "--dest=argo-live-httpd"
+          env:
+            - name: HOME
+              value: /tmp
+          volumeMounts:
+            - name: code-stream-volume
+              mountPath: /tmp/git
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsUser: 65534
+            runAsGroup: 65534
+          resources:
+            requests:
+              cpu: "25m"
+              memory: "16Mi"
+            limits:
+              cpu: "150m"
+              memory: "32Mi"
+
+      volumes:
+        - name: code-stream-volume
+          emptyDir: {}
+        - name: httpd-logs
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "argo-live-httpd"
+spec:
+  type: ClusterIP
+  selector:
+    app: "argo-live-httpd-static"
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
