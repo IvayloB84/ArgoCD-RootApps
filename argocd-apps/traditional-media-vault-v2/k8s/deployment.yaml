@@ -1,0 +1,123 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "traditional-media-vault-v2-static"
+  labels:
+    app: "traditional-media-vault-v2-static"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "traditional-media-vault-v2-static"
+  template:
+    metadata:
+      labels:
+        app: "traditional-media-vault-v2-static"
+    spec:
+      securityContext:
+        fsGroup: 65534
+      containers:
+        # 1. Unprivileged Traditional Asset Server Layer
+        - name: static-container
+          image: "nginx:alpine"
+          ports:
+            - containerPort: 9595
+          env:
+            - name: "NGINX_PORT"
+              value: "9595"
+          volumeMounts:
+            - name: code-stream-volume
+              mountPath: "/usr/share/nginx/html"
+            - name: config-volume
+              mountPath: "/etc/nginx/conf.d/default.conf"
+              subPath: "default.conf"
+            - name: tmp-fs
+              mountPath: /tmp
+            - name: var-cache
+              mountPath: /var/cache/nginx
+            - name: var-run
+              mountPath: /var/run
+          resources:
+            requests:
+              cpu: "25m"
+              memory: "16Mi"
+            limits:
+              cpu: "150m"
+              memory: "32Mi"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsUser: 101
+            runAsGroup: 101
+
+        # 2. Automated Git-Sync Synchronization Sidecar Engine Layer
+        - name: git-sync-sidecar
+          image: "registry.k8s.io/git-sync/git-sync:v4.7.1"
+          args:
+            - "--repo=https://github.com/IvayloB84/traditional-media-vault-v2.git"
+            - "--branch=main"
+            - "--depth=1"
+            - "--wait=10"
+            - "--root=/tmp/git"
+            - "--dest=traditional-media-vault-v2"
+          env:
+            - name: HOME
+              value: /tmp
+          volumeMounts:
+            - name: code-stream-volume
+              mountPath: /tmp/git
+            - name: tmp-fs
+              mountPath: /tmp
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsUser: 65534
+            runAsGroup: 65534
+          resources:
+            cpu: "25m"
+            memory: "16Mi"
+          limits:
+            cpu: "150m"
+            memory: "32Mi"
+
+      volumes:
+        - name: code-stream-volume
+          emptyDir: {}
+        - name: tmp-fs
+          emptyDir: {}
+        - name: var-cache
+          emptyDir: {}
+        - name: var-run
+          emptyDir: {}
+        - name: config-volume
+          configMap:
+            name: "traditional-media-vault-v2-static-config"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "traditional-media-vault-v2-static-config"
+data:
+  default.conf: |
+    server {
+        listen       9595;
+        listen  [::]:9595;
+        server_name  localhost;
+
+        location /healthz {
+            return 200 "healthy\n";
+        }
+
+        # Traditional Asset Server Configuration
+        location / {
+            root /usr/share/nginx/html/traditional-media-vault-v2;
+            autoindex on;            
+            try_files $uri $uri/ =404; 
+        }
+    }
