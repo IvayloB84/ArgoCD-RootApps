@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "apache-media-vault"
+  labels:
+    app: "apache-media-vault"
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: "apache-media-vault"
