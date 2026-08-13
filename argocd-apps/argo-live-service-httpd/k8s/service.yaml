@@ -6,7 +6,7 @@ metadata:
     app: "argo-live-service-httpd"
 spec:
   ports:
-    - port: 9595
+    - port: 80
       targetPort: 9595
   selector:
     app: "argo-live-service-httpd"
