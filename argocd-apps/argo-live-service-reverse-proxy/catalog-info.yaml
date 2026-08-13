@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "argo-live-service-reverse-proxy"
+  description: "Freshly generated web application."
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: "IvayloB84/argo-live-service-reverse-proxy"
+    argocd/app-name: "argo-live-service-reverse-proxy"
+    backstage.io/kubernetes-label-selector: "app=argo-live-service-reverse-proxy-proxy"
+spec:
+  type: service
+  lifecycle: production
+  owner: "user:default/IvayloB84"
