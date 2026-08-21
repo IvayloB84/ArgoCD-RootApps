@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "nova-core-vault"
+  labels:
+    app: "nova-core-vault"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "nova-core-vault"
+  template:
+    metadata:
+      labels:
+        app: "nova-core-vault"
+    spec:
+      securityContext:
+        fsGroup: 65534
+      containers:
+        # 1. Web Server Engine Application Core Runtime Layer
+        - name: app-container
+          image: "nginx:alpine"
+          ports:
+            - containerPort: 8383
+          env:
+            - name: "NGINX_PORT"
+              value: "8383"
+          volumeMounts:
+            - name: code-stream-volume
+              mountPath: "/usr/share/nginx/html"
+            - name: config-volume
+              mountPath: "/etc/nginx/conf.d/default.conf"
+              subPath: "default.conf"
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "32Mi"
+            limits:
+              cpu: "300m"
+              memory: "64Mi"
+
+        # 2. Automated Git-Sync Synchronization Engine Layer
+        - name: git-sync-sidecar
+          image: "registry.k8s.io/git-sync/git-sync:v4.7.1"
+          args:
+            - "--repo=https://github.com/IvayloB84/nova-core-vault.git"
+            - "--branch=main"
+            - "--depth=1"
+            - "--wait=10"
+            - "--root=/tmp/git"
+            - "--dest=nova-core-vault"
+          volumeMounts:
+            - name: code-stream-volume
+              mountPath: /tmp/git
+          securityContext:
+            runAsUser: 65534
+            runAsGroup: 65534
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "32Mi"
+            limits:
+              cpu: "300m"
+              memory: "64Mi"
+
+      volumes:
+        - name: code-stream-volume
+          emptyDir: {}
+        - name: config-volume
+          configMap:
+            name: "nova-core-vault-nginx-config"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "nova-core-vault-nginx-config"
+data:
+  default.conf: |
+    server {
+        listen       8383;
+        listen  [::]:8383;
+        server_name  localhost;
+
+        location / {
+            root /usr/share/nginx/html/nova-core-vault;
+            autoindex on;
+            try_files \$uri \$uri/ @spa;
+        }
+
+        location @spa {
+            root /usr/share/nginx/html/nova-core-vault;
+            try_files /index.html =404;
+        }
+    }
