@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "nova-core-vault-httpd"
+  description: "Freshly generated web application."
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: "IvayloB84/nova-core-vault-httpd"
+    argocd/app-name: "nova-core-vault-httpd"
+    backstage.io/kubernetes-label-selector: "app=nova-core-vault-httpd"
+spec:
+  type: service
+  lifecycle: production
+  owner: "user:default/IvayloB84"
