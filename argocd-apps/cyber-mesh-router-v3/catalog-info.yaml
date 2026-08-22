@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "cyber-mesh-router-v3"
+  description: "Freshly generated web application."
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: "IvayloB84/cyber-mesh-router-v3"
+    argocd/app-name: "cyber-mesh-router-v3"
+    backstage.io/kubernetes-label-selector: "app=cyber-mesh-router-v3"
+spec:
+  type: service
+  lifecycle: production
+  owner: "user:default/IvayloB84"
