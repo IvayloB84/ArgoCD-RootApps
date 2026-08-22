@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "cyber-mesh-router"
+  labels:
+    app: "cyber-mesh-router"
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: "cyber-mesh-router"
