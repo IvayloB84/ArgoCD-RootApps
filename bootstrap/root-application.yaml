@@ -8,7 +8,8 @@ spec:
   source:
     repoURL: 'https://github.com/IvayloB84/ArgoCD-RootApps'
     targetRevision: main
-    path: "argocd-apps/*/"
+    # Point directly to the folder; recurse handles the rest
+    path: "argocd-apps"
     directory:
       recurse: true
   destination:
