@@ -24,9 +24,9 @@ spec:
         repoURL: "https://github.com/{{path.basenameNormalized}}"
         targetRevision: main
         # Pulls code from the k8s folder inside that specific application repo
-        path: "k8s"
+        path: "."
       destination:
-        server: "https://default.svc"
+        server: "https://kubernetes.default.svc"
         namespace: default
       syncPolicy:
         automated:
