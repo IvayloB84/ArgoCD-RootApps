@@ -9,20 +9,20 @@ spec:
         repoURL: "https://github.com/IvayloB84/ArgoCD-RootApps"
         revision: main
         directories:
-          - path: "argocd-apps/*/"
+          - path: "argocd-apps/*"
   syncPolicy:
     preserveResourcesOnDeletion: false
   template:
     metadata:
       name: "{{path.basename}}"
-      annotations:
-        argocd.argoproj.io/manifest-generate-paths: "{{path}}/*"
     spec:
       project: default
       source:
-        repoURL: "https://github.com/IvayloB84/{{path.basename}}"
+        # Target the umbrella GitOps directory instead of individual app repos
+        repoURL: "https://github.com/IvayloB84/ArgoCD-RootApps"
         targetRevision: main
-        path: "k8s"
+        # Evaluates cleanly to the specific folder (e.g., argocd-apps/nova-core-vault-v1)
+        path: "{{path}}"
       destination:
         server: "https://kubernetes.default.svc"
         namespace: default
