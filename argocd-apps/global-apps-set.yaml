@@ -9,19 +9,20 @@ spec:
         repoURL: "https://github.com/IvayloB84/ArgoCD-RootApps"
         revision: main
         directories:
+          # The trailing glob allows ArgoCD to discover directories that contain nested subfolders
           - path: "argocd-apps/*"
   syncPolicy:
     preserveResourcesOnDeletion: false
   template:
     metadata:
+      # Automatically resolves to 'nova-core-vault-v1' 
       name: "{{path.basename}}"
     spec:
       project: default
       source:
-        # Target the umbrella GitOps directory instead of individual app repos
         repoURL: "https://github.com/IvayloB84/ArgoCD-RootApps"
         targetRevision: main
-        # Evaluates cleanly to the specific folder (e.g., argocd-apps/nova-core-vault-v1)
+        # This keeps the deployment targeting the whole folder root, not just k8s
         path: "{{path}}"
       destination:
         server: "https://kubernetes.default.svc"
