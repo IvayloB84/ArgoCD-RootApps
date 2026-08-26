@@ -15,15 +15,12 @@ spec:
     preserveResourcesOnDeletion: false
   template:
     metadata:
-      # path.basenameNormalized cleanly strips out the trailing /k8s for the app name
       name: "{{path.basenameNormalized}}"
     spec:
       project: default
       source:
-        # Dynamically targets each app's dedicated repository!
-        repoURL: "https://github.com/{{path.basenameNormalized}}"
+        repoURL: "https://github.com/IvayloB84/{{path.basenameNormalized}}"
         targetRevision: main
-        # Pulls code from the k8s folder inside that specific application repo
         path: "."
       destination:
         server: "https://kubernetes.default.svc"
