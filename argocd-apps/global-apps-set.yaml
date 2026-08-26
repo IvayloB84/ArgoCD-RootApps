@@ -6,26 +6,27 @@ metadata:
 spec:
   generators:
     - git:
-        repoURL: "https://github.com/IvayloB84/ArgoCD-RootApps"
+        repoURL: 'https://github.com/IvayloB84/ArgoCD-RootApps'
         revision: main
         directories:
-          # The trailing glob allows ArgoCD to discover directories that contain nested subfolders
-          - path: "argocd-apps/*"
+          # The trailing /k8s tells ArgoCD to look exactly where the manifests are
+          - path: "argocd-apps/*/k8s"
   syncPolicy:
     preserveResourcesOnDeletion: false
   template:
     metadata:
-      # Automatically resolves to 'nova-core-vault-v1' 
-      name: "{{path.basename}}"
+      # path.basenameNormalized cleanly strips out the trailing /k8s for the app name
+      name: "{{path.basenameNormalized}}"
     spec:
       project: default
       source:
-        repoURL: "https://github.com/IvayloB84/ArgoCD-RootApps"
+        # Dynamically targets each app's dedicated repository!
+        repoURL: "https://github.com/{{path.basenameNormalized}}"
         targetRevision: main
-        # This keeps the deployment targeting the whole folder root, not just k8s
-        path: "{{path}}"
+        # Pulls code from the k8s folder inside that specific application repo
+        path: "k8s"
       destination:
-        server: "https://kubernetes.default.svc"
+        server: "https://default.svc"
         namespace: default
       syncPolicy:
         automated:
