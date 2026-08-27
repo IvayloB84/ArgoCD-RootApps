@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "plasma-java-engine-v1"
+  labels:
+    app: "plasma-java-engine-v1"
+spec:
+  ports:
+    - port: 8253
+      targetPort: 8253
+  selector:
+    app: "plasma-java-engine-v1"
