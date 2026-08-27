@@ -10,7 +10,7 @@ spec:
     targetRevision: main
     path: "argocd-apps"
     directory:
-      recurse: true
+      recurse: false
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: default
