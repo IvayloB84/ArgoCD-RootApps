@@ -22,7 +22,7 @@ spec:
         targetRevision: main
         # Point directly to your deployment directory.
         # This allows your new test application to sync and scale to 3 replicas perfectly!
-        path: "k8s" 
+        path: "." 
       destination:
         server: "https://kubernetes.default.svc"
         namespace: default
