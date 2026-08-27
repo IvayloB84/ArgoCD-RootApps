@@ -36,3 +36,7 @@ spec:
         syncOptions:
           - CreateNamespace=true
           - SkipDryRunOnMissingResource=true
+
+      componentParameterOverrides:
+        - name: spec.template.metadata.annotations.git-commit-sha
+          value: "{{branch.main.head_sha}}"
