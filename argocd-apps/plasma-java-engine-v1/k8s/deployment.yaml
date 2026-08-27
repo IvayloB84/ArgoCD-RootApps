@@ -1,0 +1,122 @@
+# Automated Pipeline Rollout Validation Check
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "plasma-java-engine-v1"
+  labels:
+    app: "plasma-java-engine-v1"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "plasma-java-engine-v1"
+  template:
+    metadata:
+      labels:
+        app: "plasma-java-engine-v1"
+    spec:
+      securityContext:
+        fsGroup: 65534
+      containers:
+        # 1. Web Server Engine Application Core Runtime Layer
+        - name: app-container
+          image: "httpd:alpine"
+          ports:
+            - containerPort: 8755
+          env:
+            - name: "HTTPD_PORT"
+              value: "8755"
+          volumeMounts:
+            - name: code-stream-volume
+              mountPath: "/usr/local/apache2/htdocs"
+            - name: config-volume
+              mountPath: "/usr/local/apache2/conf/httpd.conf"
+              subPath: "httpd.conf"
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "32Mi"
+            limits:
+              cpu: "300m"
+              memory: "64Mi"
+
+        # 2. Automated Git-Sync Synchronization Engine Layer
+        - name: git-sync-sidecar
+          image: "registry.k8s.io/git-sync/git-sync:v4.7.1"
+          args:
+            - "--repo=https://github.com/IvayloB84/plasma-java-engine-v1.git"
+            - "--branch=main"
+            - "--depth=1"
+            - "--wait=10"
+            - "--root=/tmp/git"
+            - "--dest=plasma-java-engine-v1"
+          volumeMounts:
+            - name: code-stream-volume
+              mountPath: /tmp/git
+          securityContext:
+            runAsUser: 65534
+            runAsGroup: 65534
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "32Mi"
+            limits:
+              cpu: "300m"
+              memory: "64Mi"
+
+      volumes:
+        - name: code-stream-volume
+          emptyDir: {}
+        - name: config-volume
+          configMap:
+            name: "plasma-java-engine-v1-httpd-config"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "plasma-java-engine-v1-httpd-config"
+data:
+  httpd.conf: |
+    ServerRoot "/usr/local/apache2"
+    Listen 8755
+
+    # 1. Load the core modules first
+    LoadModule mpm_event_module modules/mod_mpm_event.so
+    LoadModule authn_core_module modules/mod_authn_core.so
+    LoadModule authz_core_module modules/mod_authz_core.so
+    LoadModule dir_module modules/mod_dir.so
+    LoadModule mime_module modules/mod_mime.so
+    LoadModule log_config_module modules/mod_log_config.so
+    LoadModule env_module modules/mod_env.so
+    LoadModule headers_module modules/mod_headers.so
+    LoadModule rewrite_module modules/mod_rewrite.so
+    LoadModule unixd_module modules/mod_unixd.so
+
+    <IfModule unixd_module>
+        User daemon
+        Group daemon
+    </IfModule>
+
+    TypesConfig conf/mime.types
+    CustomLog /proc/self/fd/1 combined
+    ErrorLog /proc/self/fd/2
+    LogLevel warn
+
+    ServerTokens Prod
+    ServerSignature Off
+
+    DocumentRoot "/usr/local/apache2/htdocs/plasma-java-engine-v1"
+
+    <Directory "/usr/local/apache2/htdocs/plasma-java-engine-v1">
+        Options -Indexes +FollowSymLinks
+        AllowOverride None
+        Require all granted
+
+        # SPA Engine Forwarding Logic
+        RewriteEngine On
+        RewriteBase /
+        RewriteRule ^index\.html$ - [L]
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteRule . /index.html [L]
+    </Directory>
