@@ -9,10 +9,10 @@ spec:
         repoURL: 'https://github.com/IvayloB84/ArgoCD-RootApps'
         revision: main
         directories:
-          - path: "."
+          - path: "argocd-apps/*" 
         directory:
           recurse: true
-          exclude: "{argocd-app.yaml,catalog-info.yaml}"
+          exclude: "argocd-app.yaml,catalog-info.yaml"
   syncPolicy:
     preserveResourcesOnDeletion: false
   template:
