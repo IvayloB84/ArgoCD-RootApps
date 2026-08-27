@@ -5,18 +5,12 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  # ENABLING MULTIPLE SOURCES
-  sources:
-    # Source 1: Your central public automation engine configs
-    - repoURL: 'https://github.com/IvayloB84/ArgoCD-RootApps'
-      targetRevision: main
-      path: "argocd-apps"
-      directory:
-        recurse: true
-    # Source 2: Your private mandatory core platform infrastructure
-    - repoURL: 'https://github.com/IvayloB84/backstage-pilot'
-      targetRevision: main
-      path: "backstage-manifests"
+  source:
+    repoURL: 'https://github.com/IvayloB84/ArgoCD-RootApps'
+    targetRevision: main
+    path: "argocd-apps"
+    directory:
+      recurse: true
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: default
