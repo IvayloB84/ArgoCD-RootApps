@@ -9,7 +9,7 @@ spec:
         repoURL: 'https://github.com/IvayloB84/ArgoCD-RootApps'
         revision: main
         directories:
-          - path: "argocd-apps"
+          - path: "argocd-apps/*"
   syncPolicy:
     preserveResourcesOnDeletion: false
   template:
