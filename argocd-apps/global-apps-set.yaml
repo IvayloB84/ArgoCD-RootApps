@@ -10,11 +10,6 @@ spec:
         revision: main
         directories:
           - path: "argocd-apps/*" 
-        directory:
-          recurse: true
-          exclude:
-            - "argocd-app.yaml"
-            - "catalog-info.yaml"
   syncPolicy:
     preserveResourcesOnDeletion: false
   template:
@@ -27,7 +22,12 @@ spec:
         targetRevision: main
         # Point directly to your deployment directory.
         # This allows your new test application to sync and scale to 3 replicas perfectly!
-        path: "." 
+        path: "."
+        directory:
+          recurse: true
+          exclude:
+            - "argocd-app.yaml"
+            - "catalog-info.yaml"
       destination:
         server: "https://kubernetes.default.svc"
         namespace: default
