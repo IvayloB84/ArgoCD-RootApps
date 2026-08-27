@@ -18,7 +18,7 @@ spec:
     spec:
       project: default
       source:
-        repoURL: "https://github.com/IvayloB84/{{path.basename}}"
+        repoURL: 'https://github.com/IvayloB84/{{path.basename}}'
         targetRevision: main
         # Point directly to your deployment directory.
         # This allows your new test application to sync and scale to 3 replicas perfectly!
