@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "plasma-java-engine"
+  description: "Freshly generated web application."
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: "IvayloB84/plasma-java-engine"
+    argocd/app-name: "plasma-java-engine"
+    backstage.io/kubernetes-label-selector: "app=plasma-java-engine"
+spec:
+  type: service
+  lifecycle: production
+  owner: "user:default/IvayloB84"
