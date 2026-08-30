@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "nova-core-vault-v1"
+  labels:
+    app: "nova-core-vault-v1"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "nova-core-vault-v1"
+  template:
+    metadata:
+      labels:
+        app: "nova-core-vault-v1"
+    spec:
+      securityContext:
+        fsGroup: 65534
+      containers:
+        # 1. Web Server Engine Application Core Runtime Layer
+        - name: app-container
+          image: "nginx:alpine"
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Waiting for git-sync sidecar to populate directory..."
+              while [ ! -d "/usr/share/nginx/html/nova-core-vault-v1" ]; do
+                sleep 2
+              done
+              echo "Directory found! Launching asset server."
+              nginx -g 'daemon off;'
+          ports:
+            - containerPort: 8649
+          env:
+            - name: "NGINX_PORT"
+              value: "8649"
+          volumeMounts:
+            - name: code-stream-volume
+              mountPath: "/usr/share/nginx/html"
+            - name: config-volume
+              mountPath: "/etc/nginx/conf.d/default.conf"
+              subPath: "default.conf"
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "32Mi"
+            limits:
+              cpu: "300m"
+              memory: "64Mi"
+
+        # 2. Automated Git-Sync Synchronization Engine Layer
+        - name: git-sync-sidecar
+          image: "registry.k8s.io/git-sync/git-sync:v4.7.1"
+          args:
+            - "--repo=https://github.com/IvayloB84/nova-core-vault-v1.git"
+            - "--ref=main"
+            - "--depth=1"
+            - "--period=10s"
+            - "--root=/tmp/git"
+            - "--link=nova-core-vault-v1"
+          volumeMounts:
+            - name: code-stream-volume
+              mountPath: /tmp/git
+          securityContext:
+            runAsUser: 65534
+            runAsGroup: 65534
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "32Mi"
+            limits:
+              cpu: "300m"
+              memory: "64Mi"
+
+      volumes:
+        - name: code-stream-volume
+          emptyDir: {}
+        - name: config-volume
+          configMap:
+            name: "nova-core-vault-v1-nginx-config"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "nova-core-vault-v1-nginx-config"
+data:
+  default.conf: |
+    server {
+        listen       8649;
+        listen  [::]:8649;
+        server_name  localhost;
+
+        location / {
+            root /usr/share/nginx/html/nova-core-vault-v1;
+            autoindex on;
+            try_files \$uri \$uri/ @spa;
+        }
+
+        location @spa {
+            root /usr/share/nginx/html/nova-core-vault-v1;
+            try_files /index.html =404;
+        }
+    }
