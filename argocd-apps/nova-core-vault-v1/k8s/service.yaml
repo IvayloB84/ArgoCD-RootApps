@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "nova-core-vault-v1-static-svc"
+  labels:
+    app: "nova-core-vault-v1-static"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+  selector:
+    app: "nova-core-vault-v1-static"
