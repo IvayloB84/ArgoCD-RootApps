@@ -1,0 +1,26 @@
+name: GitOps Delayed Repository Purge
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  delete-repo:
+    if: contains(github.event.head_commit.message, 'purge/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract Target Repository Name from Commit
+        id: parse
+        run: |
+          MSG="${{ github.event.head_commit.message }}"
+          REPO_NAME=$(echo "$MSG" | grep -oE 'purge/[a-zA-Z0-9_-]+' | cut -d'/' -f2)
+          echo "target_repo=$REPO_NAME" >> $GITHUB_OUTPUT
+
+      - name: Permanently Delete Standalone Application Repository
+        run: |
+          curl -L \
+            -X DELETE \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: token ${{ secrets.BACKSTAGE_LOCAL }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository_owner }}/${{ steps.parse.outputs.target_repo }}

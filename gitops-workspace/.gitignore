@@ -1,0 +1,36 @@
+# Sensitive Information and Passwords
+*password*
+*secret*
+*token*
+*.pem
+*.key
+credentials/
+secrets/
+
+# Local Testing Variables
+.env
+.env.local
+
+# Kubernetes Cluster Cache Leakage
+kubeconfig*
+*.kubeconfig
+
+# System OS Files
+.DS_Store
+Thumbs.db
+
+# Ignore local environment variables & scripts
+start-cluster.sh
+start-cluster-prod.sh
+
+# Ignore local Ruby on Rails development runtime noise
+rails-articles-project/log/*
+rails-articles-project/tmp/*
+rails-articles-project/storage/*
+rails-articles-project/db/*.sqlite3
+rails-articles-project/db/*.sqlite3-journal
+rails-articles-project/db/*.sqlite3-wal
+rails-articles-project/.byebug_history
+
+# Ignore local backup files *.bak
+*.bak*

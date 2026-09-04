@@ -1,0 +1,20 @@
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+metadata:
+  name: my-rootless-cluster
+servers: 1
+ports:
+  - port: 8080:80
+    nodeFilters:
+      - loadbalancer
+volumes:
+  # Evaluated dynamically on whatever machine runs the script
+  - volume: ${REPO_DIR}/bootstrap:/var/lib/rancher/k3s/server/manifests
+    nodeFilters:
+      - server:0
+options:
+  k3s:
+    extraArgs:
+      - arg: --kubelet-arg=feature-gates=KubeletInUserNamespace=true
+        nodeFilters:
+          - server:0
