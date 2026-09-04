@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ values.name }}
+  labels:
+    app: {{ values.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ values.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ values.name }}
+    spec:
+      containers:
+        - name: {{ values.name }}
+          # This image must exist in the registry before ArgoCD syncs — a CI
+          # pipeline (not part of this scaffolder) needs to build and push it.
+          image: ghcr.io/{{ values.owner }}/{{ values.name }}:latest
+          ports:
+            - containerPort: 8080
+          # TCP probes work regardless of whether 'actuator' was selected as
+          # a dependency. If you did select actuator, swap these for
+          # httpGet on /actuator/health/{liveness,readiness} instead.
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 15

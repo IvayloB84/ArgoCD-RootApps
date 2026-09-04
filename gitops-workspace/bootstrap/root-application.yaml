@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: master-root-bootstrapper
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/IvayloB84/ArgoCD-RootApps.git'
+    targetRevision: main
+    path: "argocd-apps"
+    directory:
+      recurse: false
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
