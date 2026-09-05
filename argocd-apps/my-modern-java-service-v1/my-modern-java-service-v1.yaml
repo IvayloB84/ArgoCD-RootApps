@@ -13,7 +13,7 @@ spec:
     path: argocd-apps/my-modern-java-service-v1/k8s/overlays/production
   destination:
     server: https://kubernetes.default.svc
-    namespace: target-production-apps
+    namespace: default
   syncPolicy:
     automated:
       prune: true
