@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-modern-java-service-v4
+  labels:
+    app: my-modern-java-service-v4
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-modern-java-service-v4
+  template:
+    metadata:
+      labels:
+        app: my-modern-java-service-v4
+    spec:
+      containers:
+        - name: my-modern-java-service-v4
+          # This image must exist in the registry before ArgoCD syncs — a CI
+          # pipeline (not part of this scaffolder) needs to build and push it.
+          image: ghcr.io/IvayloB84/my-modern-java-service-v4:latest
+          ports:
+            - containerPort: 8349
+          # TCP probes work regardless of whether 'actuator' was selected as
+          # a dependency. If you did select actuator, swap these for
+          # httpGet on /actuator/health/{liveness,readiness} instead.
+          readinessProbe:
+            tcpSocket:
+              port: 8349
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 8349
+            initialDelaySeconds: 20
+            periodSeconds: 15
