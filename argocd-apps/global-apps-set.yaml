@@ -20,9 +20,9 @@ spec:
       source:
         repoURL: 'https://github.com/IvayloB84/ArgoCD-RootApps.git'
         targetRevision: main
-        path: "argocd-apps/{{path.basename}}/overlays/production"
-        # No `directory:` block — omitting it lets ArgoCD auto-detect and
-        # build with Kustomize, since this path has its own kustomization.yaml.
+        path: "argocd-apps/{{path.basename}}"
+        directory:
+          recurse: false
       destination:
         server: "https://kubernetes.default.svc"
         namespace: target-production-apps
