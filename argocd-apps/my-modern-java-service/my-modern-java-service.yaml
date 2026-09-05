@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-modern-java-service
+  namespace: argocd
+spec:
+  project: default
+  source:
+    # Points at THIS repo (ArgoCD-RootApps) — the k8s manifests live right
+    # alongside this file, not in the developer's application repo.
+    repoURL: https://github.com/IvayloB84/ArgoCD-RootApps
+    targetRevision: HEAD
+    path: argocd-apps/my-modern-java-service/k8s/overlays/production
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: target-production-apps
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
