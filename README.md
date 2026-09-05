@@ -28,19 +28,11 @@ ArgoCD-RootApps/
 ├── .argocdignore             # Instructs Argo CD to completely ignore markdown/documentation edits
 ├── README.md                 # Master infrastructure manual (This file)
 ├── k3d-config.yaml           # Declarative cluster lifecycle configuration schema blueprint
-├── start-cluster.sh          # Private machine-specific start script (Git-ignored)
-├── argocd-admin-password.txt # Extracted secure admin dashboard credentials (Git-ignored)
 ├── argocd-apps/              # The GitOps Child Application Registry
-│   ├── rails-app.yaml        # Tracks values-driven Rails 8 Gallery application parameters
-│   └── web-app.yaml          # Tracks lightweight Nginx test application parameters
-├── apps/                     # Complete Core Cluster Manifests (Backups, Secrets, Deployments)
-│   ├── rails-app.yaml        # High-Availability Rails deployment with rolling update strategy
-│   ├── rails-backup-cronjob.yaml # Automated GFS backup script with SQLite checkpoint flushing
-│   └── rails-sealed-secrets.yaml # Encrypted client-side application keys managed via kubeseal
+│   ├── .gitkeep              # Rule to prevent delete directory
+│   └── global-apps-set.yaml  # Tracks repository for new applications
 ├── bootstrap/                # Master Cluster Initialization Framework
 │   └── root-application.yaml # Master parent "Root App" targeting the argocd-apps/ registry
-├── rails-app-chart/          # Parameterized Rails 8 Production Helm Chart Blueprint
-└── rails-articles-project/   # Ruby on Rails 8 Application Core Source Code Workspace
 ```
 
 ---

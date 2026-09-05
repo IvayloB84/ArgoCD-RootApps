@@ -9,7 +9,7 @@ spec:
         repoURL: 'https://github.com/IvayloB84/ArgoCD-RootApps.git'
         revision: main
         directories:
-          - path: "argocd-apps/*" 
+          - path: "argocd-apps/*"
   syncPolicy:
     preserveResourcesOnDeletion: false
   template:
@@ -18,15 +18,16 @@ spec:
     spec:
       project: default
       source:
-        repoURL: 'https://github.com/IvayloB84/{{path.basename}}.git'
+        repoURL: 'https://github.com/IvayloB84/ArgoCD-RootApps.git'
         targetRevision: main
-        path: "."
-        directory:
-          recurse: true
-          exclude: '{argocd-app.yaml,catalog-info.yaml}'
+        path: "argocd-apps/{{path.basename}}/k8s/overlays/production"
+        # No `directory:` block here — its presence forces raw recursive
+        # apply and SKIPS Kustomize auto-detection. Since this path has its
+        # own kustomization.yaml, omitting `directory` lets ArgoCD build it
+        # with Kustomize instead, which is what we actually want.
       destination:
         server: "https://kubernetes.default.svc"
-        namespace: default
+        namespace: target-production-apps
       syncPolicy:
         automated:
           prune: true
