@@ -18,7 +18,7 @@ spec:
         - name: my-modern-java-service
           # This image must exist in the registry before ArgoCD syncs — a CI
           # pipeline (not part of this scaffolder) needs to build and push it.
-          image: ghcr.io/ivaylob84/my-modern-java-service:0434dff422cd2c6f23a832b2760057a123383307
+          image: ghcr.io/ivaylob84/my-modern-java-service:e12d21da048b4367607b7ab8e491765edfd38973
           ports:
             - containerPort: 8080
           # TCP probes work regardless of whether 'actuator' was selected as
