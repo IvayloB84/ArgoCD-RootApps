@@ -29,5 +29,5 @@ jobs:
         run: |
           curl -H "Authorization: bearer ${{ secrets.BACKSTAGE_LOCAL }}" \
                -X POST \
-               -d '{"query": "mutation { deleteFile(input: { repositoryId: \"${{ github.repository_id }}\", branch: { branchName: \"main\" }, path: \"argocd-apps/${{ steps.parse.outputs.target_repo }}\", expectedHeadOid: \"${{ github.event.head_commit.id }}\", message: \"infrastructure: purge folder\" }) { clientMutationId } }"}' \
+               -d '{"query": "mutation { createCommitOnHead(input: { branch: { repositoryNameWithOwner: \"${{ github.repository }}\", branchName: \"main\" }, expectedHeadOid: \"${{ github.event.head_commit.id }}\", message: { headline: \"infrastructure: purge folder for ${{ steps.parse.outputs.target_repo }}\" }, fileChanges: { deletions: [{ path: \"argocd-apps/${{ steps.parse.outputs.target_repo }}\" }] } }) { commit { oid } } }"}' \
                https://api.github.com/graphql
