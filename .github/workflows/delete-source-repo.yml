@@ -13,8 +13,8 @@ jobs:
         id: parse
         run: |
           MSG="${{ github.event.head_commit.message }}"
-          # head -n 1 ensures we only take the first match if it appears multiple times
-          REPO_NAME=$(echo "$MSG" | grep -oE 'purge/[a-zA-Z0-9_-]+' | cut -d'/' -f2 | head -n 1)
+          # -m 1 tells grep to stop processing after the first match, preventing multi-line format bugs
+          REPO_NAME=$(echo "$MSG" | grep -m 1 -oE 'purge/[a-zA-Z0-9_-]+' | cut -d'/' -f2)
           echo "target_repo=$REPO_NAME" >> $GITHUB_OUTPUT
 
       - name: Permanently Delete Standalone Application Repository
