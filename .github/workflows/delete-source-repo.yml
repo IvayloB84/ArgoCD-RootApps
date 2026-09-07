@@ -27,12 +27,12 @@ jobs:
 
       - name: Delete Folder via GitHub API
         run: |
-          # 1. Get the file SHA signature using the correct API repos path
+          # 1. Fetch the data signature (SHA) using the correct API repos path structure
           FILE_SHA=$(curl -s -H "Authorization: token ${{ secrets.BACKSTAGE_LOCAL }}" \
             "https://github.com{{ github.repository }}/contents/argocd-apps/${{ steps.parse.outputs.target_repo }}/deployment.yaml" | jq -r '.sha')
 
-          # 2. Delete the file using the correct API repos path
+          # 2. Delete the tracking file to trigger the automatic catalog cleanup
           curl -X DELETE \
             -H "Authorization: token ${{ secrets.BACKSTAGE_LOCAL }}" \
-            -d "{\"message\":\"purge\",\"sha\":\"$FILE_SHA\"}" \
+            -d "{\"message\":\"infrastructure: purge folder for ${{ steps.parse.outputs.target_repo }}\",\"sha\":\"$FILE_SHA\"}" \
             "https://github.com{{ github.repository }}/contents/argocd-apps/${{ steps.parse.outputs.target_repo }}/deployment.yaml"
