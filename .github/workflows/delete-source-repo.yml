@@ -27,7 +27,12 @@ jobs:
 
       - name: Delete Folder via GitHub API
         run: |
-          curl -H "Authorization: bearer ${{ secrets.BACKSTAGE_LOCAL }}" \
-               -X POST \
-               -d '{"query": "mutation { createCommitOnHead(input: { branch: { repositoryNameWithOwner: \"${{ github.repository }}\", branchName: \"main\" }, expectedHeadOid: \"${{ github.event.head_commit.id }}\", message: { headline: \"infrastructure: purge folder for ${{ steps.parse.outputs.target_repo }}\" }, fileChanges: { deletions: [{ path: \"argocd-apps/${{ steps.parse.outputs.target_repo }}\" }] } }) { commit { oid } } }"}' \
-               https://api.github.com/graphql
+          # 1. Get the file SHA signature using the correct API repos path
+          FILE_SHA=$(curl -s -H "Authorization: token ${{ secrets.BACKSTAGE_LOCAL }}" \
+            "https://github.com{{ github.repository }}/contents/argocd-apps/${{ steps.parse.outputs.target_repo }}/deployment.yaml" | jq -r '.sha')
+
+          # 2. Delete the file using the correct API repos path
+          curl -X DELETE \
+            -H "Authorization: token ${{ secrets.BACKSTAGE_LOCAL }}" \
+            -d "{\"message\":\"purge\",\"sha\":\"$FILE_SHA\"}" \
+            "https://github.com{{ github.repository }}/contents/argocd-apps/${{ steps.parse.outputs.target_repo }}/deployment.yaml"
