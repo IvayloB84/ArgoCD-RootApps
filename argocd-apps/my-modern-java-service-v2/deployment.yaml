@@ -25,11 +25,11 @@ spec:
             requests:
               # Minimum resources guaranteed to the pod
               cpu: "250m"
-              memory: "256Mi"
+              memory: "512Mi"
             limits:
               # Maximum resources the pod can use
               cpu: "500m"
-              memory: "512Mi"
+              memory: "1Gi"
           # TCP probes work regardless of whether 'actuator' was selected as
           # a dependency. If you did select actuator, swap these for
           # httpGet on /actuator/health/{liveness,readiness} instead.
