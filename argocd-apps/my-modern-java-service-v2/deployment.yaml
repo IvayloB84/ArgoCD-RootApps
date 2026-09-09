@@ -21,6 +21,15 @@ spec:
           image: ghcr.io/ivaylob84/my-modern-java-service-v2:98fe1fb3c4bba105231910490143f55c3af3ba0b
           ports:
             - containerPort: 8302
+          resources:
+            requests:
+              # Minimum resources guaranteed to the pod
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              # Maximum resources the pod can use
+              cpu: "500m"
+              memory: "512Mi"
           # TCP probes work regardless of whether 'actuator' was selected as
           # a dependency. If you did select actuator, swap these for
           # httpGet on /actuator/health/{liveness,readiness} instead.
