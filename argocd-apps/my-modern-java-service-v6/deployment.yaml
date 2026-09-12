@@ -1,37 +1,62 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ${{ values.name }}
+  name: my-modern-java-service-v6
   labels:
-    app: ${{ values.name }}
+    app: my-modern-java-service-v6
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ${{ values.name }}
+      app: my-modern-java-service-v6
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   template:
     metadata:
       labels:
-        app: ${{ values.name }}
+        app: my-modern-java-service-v6
     spec:
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
       containers:
-        - name: ${{ values.name }}
-          # This image must exist in the registry before ArgoCD syncs — a CI
-          # pipeline (not part of this scaffolder) needs to build and push it.
-          image: ghcr.io/${{ values.owner | lower }}/${{ values.name | lower }}:latest
+        - name: my-modern-java-service-v6
+          image: ghcr.io/ivaylob84/my-modern-java-service-v6:10cf4b334a31b9acff104a3583af6904602c2542
           ports:
-            - containerPort: ${{ values.port }}
-          # TCP probes work regardless of whether 'actuator' was selected as
-          # a dependency. If you did select actuator, swap these for
-          # httpGet on /actuator/health/{liveness,readiness} instead.
-
-          readinessProbe:
-            tcpSocket:
-              port: ${{ values.port }}
-            initialDelaySeconds: 10
-            periodSeconds: 10
+            - name: http
+              containerPort: 8167
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "512Mi"
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8167
+            periodSeconds: 5
+            failureThreshold: 60
           livenessProbe:
-            tcpSocket:
-              port: ${{ values.port }}
-            initialDelaySeconds: 20
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8167
             periodSeconds: 15
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8167
+            periodSeconds: 10
+            failureThreshold: 3
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sh", "-c", "sleep 10"]
+      terminationGracePeriodSeconds: 60
+
