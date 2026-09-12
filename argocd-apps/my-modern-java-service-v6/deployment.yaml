@@ -27,7 +27,8 @@ spec:
         - name: my-modern-java-service-v6
           image: ghcr.io/ivaylob84/my-modern-java-service-v6:10cf4b334a31b9acff104a3583af6904602c2542
           ports:
-              containerPort: 8080
+            - name: http
+              containerPort: 8167
           resources:
             requests:
               cpu: "250m"
@@ -38,19 +39,19 @@ spec:
           startupProbe:
             httpGet:
               path: /actuator/health/liveness
-              port: 8080
+              port: 8167
             periodSeconds: 5
             failureThreshold: 60
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
-              port: 8080
+              port: 8167
             periodSeconds: 15
             failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
-              port: 8080
+              port: 8167
             periodSeconds: 10
             failureThreshold: 3
           lifecycle:
