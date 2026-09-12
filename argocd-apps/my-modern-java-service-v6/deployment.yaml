@@ -9,64 +9,52 @@ spec:
   selector:
     matchLabels:
       app: my-modern-java-service-v6
-  template:
-    metadata:
-      labels:
-        app: my-modern-java-service-v6
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 1
       maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: my-modern-java-service-v6
     spec:
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
       containers:
         - name: my-modern-java-service-v6
-          # This image must exist in the registry before ArgoCD syncs — a CI
-          # pipeline (not part of this scaffolder) needs to build and push it.
           image: ghcr.io/ivaylob84/my-modern-java-service-v6:10cf4b334a31b9acff104a3583af6904602c2542
           ports:
-            - containerPort: 8080
-            - name: http
-          # TCP probes work regardless of whether 'actuator' was selected as
-          # a dependency. If you did select actuator, swap these for
-          # httpGet on /actuator/health/{liveness,readiness} instead.
-          # Resource requests and limits
+              containerPort: 8080
           resources:
             requests:
-              # Minimum resources guaranteed to the pod
               cpu: "250m"
               memory: "256Mi"
             limits:
-              # Maximum resources the pod can use
               cpu: "1000m"
               memory: "512Mi"
-          # Startup probe: allows slow JVM startup
           startupProbe:
             httpGet:
               path: /actuator/health/liveness
               port: 8080
-            # Check every 5 seconds, allow up to 60 attempts (5 min)
             periodSeconds: 5
             failureThreshold: 60
-          # Liveness probe: restarts pod if unhealthy
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
               port: 8080
             periodSeconds: 15
             failureThreshold: 3
-          # Readiness probe: removes pod from service if not ready
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
               port: 8080
             periodSeconds: 10
             failureThreshold: 3
-          # Allow graceful shutdown
           lifecycle:
             preStop:
               exec:
-                # Sleep before SIGTERM to allow load balancer to update
                 command: ["sh", "-c", "sleep 10"]
-      # Grace period must exceed preStop sleep + shutdown timeout
       terminationGracePeriodSeconds: 60
