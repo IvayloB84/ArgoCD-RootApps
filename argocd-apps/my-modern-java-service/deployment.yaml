@@ -25,7 +25,7 @@ spec:
         fsGroup: 10001
       containers:
         - name: my-modern-java-service
-          image: ghcr.io/ivaylob84/my-modern-java-service:latest
+          image: ghcr.io/ivaylob84/my-modern-java-service:7245fb9c90084fcaeae0d2fb7395b48e2b677abd
           env:
             - name: SERVER_PORT
               value: "8915"
