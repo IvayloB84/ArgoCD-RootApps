@@ -25,7 +25,7 @@ spec:
         fsGroup: 10001
       containers:
         - name: my-modern-java-service-v6
-          image: ghcr.io/ivaylob84/my-modern-java-service-v6:cf56f5a807ede80d7cf396d3df150464e7baa240
+          image: ghcr.io/ivaylob84/my-modern-java-service-v6:ee39bf17eb3309bc1dcb2d47c82e8dd15c421737
           ports:
             - name: http
               containerPort: 8167
