@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rails-app-service
+  namespace: default
+  labels:
+    app: rails-web
+spec:
+  ports:
+  - port: 80
+    targetPort: http
+    name: http
+    protocol: TCP
+  - port: 8888
+    targetPort: telemetry
+    name: telemetry
+    protocol: TCP
+  selector:
+    app: rails-web
