@@ -4,7 +4,7 @@ metadata:
   name: rust-articles-pvc
   namespace: target-production-apps
   annotations:
-    argocd.argoproj.io/sync-options: Replace=false
+    argocd.argoproj.io/sync-options: Replace=false,ServerSideApply=true
 spec:
   accessModes:
     - ReadWriteOnce
