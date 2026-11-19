@@ -1,0 +1,117 @@
+---
+# Source: rust-gallery/templates/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rust-sqlite-pvc
+  namespace: target-production-apps
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: "local-path"
+  resources:
+    requests:
+      storage: "2Gi"
+
+---
+# Source: rust-gallery/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: rust-app-service
+  namespace: target-production-apps
+spec:
+  ports:
+  - port: 80
+    targetPort: 3000
+    protocol: TCP
+  selector:
+    app: rust-web
+---
+# Source: rust-gallery/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rust-app-deployment
+  namespace: target-production-apps
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: rust-web
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: rust-web
+    spec:
+      containers:
+      - name: rust-container
+        image: "ghcr.io/ivaylob84/rust-articles-app:latest"
+        imagePullPolicy: Always
+        env:
+        - name: RUST_LOG
+          value: "info"
+        - name: DATABASE_URL
+          value: "sqlite:///app/storage/production.sqlite3?mode=rwc"
+        ports:
+        - containerPort: 3000
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /rust/articles
+            port: 3000
+            scheme: HTTP
+          initialDelaySeconds: 2
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+        volumeMounts:
+        - mountPath: /app/storage
+          name: sqlite-storage
+      initContainers:
+      - name: volume-permissions-fix
+        image: alpine:3.24
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c", "chown -R 1000:1000 /app/storage && chmod -R 775 /app/storage"]
+        volumeMounts:
+        - mountPath: /app/storage
+          name: sqlite-storage
+      volumes:
+      - name: sqlite-storage
+        persistentVolumeClaim:
+          claimName: rust-sqlite-pvc
+---
+# Source: rust-gallery/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rust-app-ingress
+  namespace: target-production-apps
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  ingressClassName: traefik
+  rules:
+  - http:
+      paths:
+      - path: /rust
+        pathType: Prefix
+        backend:
+          service:
+            name: rust-app-service
+            port:
+              number: 80
+      - path: /assets
+        pathType: Prefix
+        backend:
+          service:
+            name: rust-app-service
+            port:
+              number: 80
