@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: rust-articles-pvc
   namespace: target-production-apps
+  annotations:
+    argocd.argoproj.io/sync-options: Replace=false
 spec:
   accessModes:
     - ReadWriteOnce
