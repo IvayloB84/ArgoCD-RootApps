@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rust-articles-app
+  namespace: target-production-apps
+  labels:
+    app: rust-articles-app
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: rust-articles-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: rust-articles-app
+    spec:
+      initContainers:
+        - name: volume-permissions-fix
+          image: alpine:3.24
+          imagePullPolicy: IfNotPresent
+          command: ["sh", "-c", "chown -R 1000:1000 /app/storage && chmod -R 775 /app/storage"]
+          volumeMounts:
+            - mountPath: /app/storage
+              name: sqlite-storage
+      containers:
+        - name: rust-articles-app
+          image: ghcr.io/ivaylob84/rust-articles-app:latest
+          imagePullPolicy: Always
+          env:
+            - name: RUST_LOG
+              value: "info"
+            - name: DATABASE_URL
+              value: "sqlite:///app/storage/production.sqlite3?mode=rwc"
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /rust/articles
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /rust/health
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          volumeMounts:
+            - mountPath: /app/storage
+              name: sqlite-storage
+      volumes:
+        - name: sqlite-storage
+          persistentVolumeClaim:
+            claimName: rust-articles-pvc
