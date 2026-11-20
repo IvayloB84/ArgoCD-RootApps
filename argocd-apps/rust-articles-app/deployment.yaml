@@ -28,7 +28,7 @@ spec:
               name: sqlite-storage
       containers:
         - name: rust-articles-app
-          image: ghcr.io/ivaylob84/rust-articles-app:3ec353dfa0cae80db4299200da18ad6d0731145e
+          image: ghcr.io/ivaylob84/rust-articles-app:a76ac6bbbebadcd279c8bb211feb514df94dc323
           imagePullPolicy: Always
           env:
             - name: RUST_LOG
