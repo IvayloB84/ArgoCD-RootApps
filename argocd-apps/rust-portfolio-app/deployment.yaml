@@ -30,7 +30,7 @@ spec:
               name: sqlite-storage
       containers:
         - name: rust-portfolio-app
-          image: ghcr.io/ivaylob84/rust-portfolio-app:94df47632466daa50878058400c7f9abc107d1a2
+          image: ghcr.io/ivaylob84/rust-portfolio-app:004fb4f6897ea074f4752703a1a291b97e6a09f5
           imagePullPolicy: Always
           env:
             - name: RUST_LOG
