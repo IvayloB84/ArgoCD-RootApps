@@ -1,0 +1,32 @@
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: vault-backend
+  namespace: target-production-apps
+spec:
+  provider:
+    vault:
+      server: http://vault-service.default.svc.cluster.local:8200
+      path: secret
+      version: v2
+      auth:
+        tokenSecretRef:
+          name: vault-dev-token
+          key: root-token
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: rust-portfolio-secrets
+  namespace: target-production-apps
+spec:
+  refreshInterval: 15s
+  secretStoreRef:
+    name: vault-backend
+    kind: SecretStore
+  target:
+    name: rust-portfolio-secrets
+    creationPolicy: Owner
+  dataFrom:
+    - extract:
+        key: rust-portfolio-app
