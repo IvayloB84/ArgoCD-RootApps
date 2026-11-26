@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rust-portfolio-app
+  namespace: target-production-apps
+  labels:
+    app: rust-portfolio-app
+    backstage.io/kubernetes-id: rust-portfolio-app
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: rust-portfolio-app
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: rust-portfolio-app
+        backstage.io/kubernetes-id: rust-portfolio-app
+    spec:
+      initContainers:
+        - name: volume-permissions-fix
+          image: alpine:3.24
+          imagePullPolicy: IfNotPresent
+          command: ["sh", "-c", "chown -R 1000:1000 /app/storage && chmod -R 775 /app/storage"]
+          volumeMounts:
+            - mountPath: /app/storage
+              name: sqlite-storage
+      containers:
+        - name: rust-portfolio-app
+          image: ghcr.io/ivaylob84/rust-portfolio-app:0461b85878f71b449cd75f1f0dd1aeada83a8f27
+          imagePullPolicy: Always
+          env:
+            - name: RUST_LOG
+              value: "info"
+            - name: PORT
+              value: "3000"
+            - name: DATABASE_URL
+              value: "sqlite:///app/storage/production.sqlite3?mode=rwc"
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /portfolio/health
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /portfolio/health
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          volumeMounts:
+            - mountPath: /app/storage
+              name: sqlite-storage
+      volumes:
+        - name: sqlite-storage
+          persistentVolumeClaim:
+            claimName: rust-portfolio-pvc
