@@ -39,6 +39,9 @@ spec:
               value: "3000"
             - name: DATABASE_URL
               value: "sqlite:///app/storage/production.sqlite3?mode=rwc"
+          envFrom:
+            - secretRef:
+                name: rust-portfolio-secrets
           ports:
             - containerPort: 3000
               protocol: TCP
